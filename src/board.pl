@@ -1,6 +1,7 @@
 :- use_module(library(lists)).
 :- use_module(library(between)).
 :- use_module(library(random)).
+:- consult(utils).
 
 
 %----------------------------------------DISPLAY BOARD----------------------------------------%
@@ -12,7 +13,7 @@ display_initial_board(Width, Height, Board) :-
 
 % Generate a board with tiles based on the specified width and height
 initial_board(Width, Height, Board) :-
-	findall(tile(Row, Col, [o, g, b, x], '---'), 
+	findall(tile(Row, Col, [o-blue, g-green, b-red, x-yellow], '---'), 
 			(between(1, Height, Row), between(1, Width, Col)), 
 			Board).
 
@@ -55,13 +56,13 @@ draw_top_borders([_ | Rest]) :-
 % Draw the first row of flowers (top flowers) for all tiles
 draw_flower_row1([]).
 draw_flower_row1([tile(_, _, [F1, F2, _, _], _) | Rest]) :-
-    write('| '), write(F1), write(' '), write(F2), write(' |'),
+    write('| '), display_color(F1), write(' '), display_color(F2), write(' |'),
     draw_flower_row1(Rest).
 
 % Draw the second row of flowers (bottom flowers) for all tiles
 draw_flower_row2([]).
 draw_flower_row2([tile(_, _, [_, _, F3, F4], _) | Rest]) :-
-    write('| '), write(F3), write(' '), write(F4), write(' |'),
+    write('| '), display_color(F3), write(' '), display_color(F4), write(' |'),
     draw_flower_row2(Rest).
 
 
