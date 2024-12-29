@@ -12,7 +12,7 @@ display_initial_board(Width, Height, Board) :-
 
 % Generate an initial board with tiles based on the specified width and height
 initial_board(Width, Height, Board) :-
-    findall(tile(Row, Col, [o-orange, g-black, b-blue, x-black ], '---'), 
+    findall(tile(Row, Col, [o-orange, g-black, b-blue, ' '-black ], '---'), 
             (between(1, Height, Row), between(1, Width, Col)), 
             DummyBoard),
     maplist(randomize_tile_colors, DummyBoard, Board).
@@ -87,11 +87,6 @@ draw_bottom_borders([_ | []]) :-
 draw_bottom_borders([_ | Rest]) :-
     write('+-----+-----++'),
     draw_bottom_borders(Rest).
-
-
-
-
-
 
 
 
