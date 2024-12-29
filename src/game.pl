@@ -6,7 +6,38 @@
 
 %----------------------------------------START GAME----------------------------------------%
 
+% Launch the game
+play :-
+    write('Welcome to blutentanz_03!'), nl, nl, nl,
+    
+    write('======================================='), nl,
+    write('|              GAME TYPE              |'), nl,
+    write('|=====================================|'), nl, 
+    write('|== Player1(Blue) vs Player2(Orange)==|'), nl,
+    write('|       1. Human vs Human             |'), nl,
+    write('|       2. Human vs Computer          |' ),nl,
+    write('|       3. Computer vs Human          |'), nl,
+    write('|       4. Computer vs Computer       |'), nl,
+    write('======================================='), nl,nl,nl,nl,
+   
+    write('Choose game type (1-4): '), 
+    read(GameType),
+        
+	initial_player_settings(GameType, _, _, Player1_Type, Player2_Type),
 
+	write('======================================='), nl,
+    write('|            GAME CONFIGS             |'), nl,
+    write('======================================='), nl,
+
+    write('       >Enter board width:           '),read(Width),nl,
+    write('       >Enter board height:          '),read(Height),nl,
+    write('       >Enter pieces per player:     '), read(PiecesPerPlayer),nl,nl,nl,nl,
+    
+    
+    initial_state(config(Width, Height, PiecesPerPlayer, Player1_Type, Player2_Type), state(1, player(PiecesPerPlayer), player(PiecesPerPlayer), _ )).
+    
+    %game_cycle(GameState).
+    
 
 
 %----------------------------------------GAME STATE----------------------------------------%
@@ -27,13 +58,25 @@
 % Board is the current state of the game board.
 
 
-initial_state(config(Width, Height, PiecesPerPlayer), state(1, player(Player1_Type, Player1_Pieces), player(Player2_Type, Player2_Pieces), Board)) :-
+initial_state(config(Width, Height, PiecesPerPlayer, Player1_Type, Player2_Type), state(1, player(Player1_Pieces), player(Player2_Pieces), Board)) :-
 	
-	format('Player 1: ~w\n', [Player1_Type]),
-	format('Pieces of player1: ~w\n', [Player1_Pieces]), 
+    write('======================================='), nl,
+    write('|            GAME STARTING...         |'), nl,
+    write('======================================='), nl,
+	format('Pieces per player: ~w\n', [PiecesPerPlayer]),nl,
+    format('Board Width: ~w\n', [Width]),nl,
+    format('Board Height: ~w\n', [Height]),nl,nl,nl,
+    
+    
+
+    write('======================================='), nl,
+    write('|               BEGIN!                 |'), nl,
+    write('======================================='), nl,nl,
+    format('Player 1: ~w\n', [Player1_Type]),nl,
+    format('Pieces remaining: ~w\n', [Player1_Pieces]),nl,nl,
 	
-	format('Player 2: ~w\n', [Player2_Type]),
-	format('Pieces of player2: ~w\n', [Player2_Pieces]),
+	format('Player 2: ~w\n', [Player2_Type]),nl,
+	format('Pieces remaining: ~w\n', [Player2_Pieces]),nl,
 	
 	display_initial_board(Width, Height, Board).
 
