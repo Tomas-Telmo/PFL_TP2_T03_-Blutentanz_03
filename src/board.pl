@@ -71,13 +71,30 @@ draw_flower_row2([tile(_, _, [_, _, F3, F4], _) | Rest]) :-
     write('|  '), display_color(F3), write('  |  '), display_color(F4), write('  ||'),
     draw_flower_row2(Rest).
 
-% Draw dashes below a row of flowers
+% Draw dashes below a row of flowers with token
 draw_flower_dividers([]).
-draw_flower_dividers([_ | []]) :-
-    write('| --- | --- |').
-draw_flower_dividers([_ | Rest]) :-
-    write('| --- | --- ||'),
+draw_flower_dividers([tile(_, _, _, Token) | []]) :-
+    write('| '), display_token(Token), write(' | '), display_token(Token), write(' |').
+draw_flower_dividers([tile(_, _, _, Token) | Rest]) :-
+    write('| '), display_token(Token), write(' | '), display_token(Token), write(' ||'),
     draw_flower_dividers(Rest).
+
+% Display the token, changing to -X- if it has a player
+display_token('---') :- write('---').
+display_token(Token) :- write('-'), write(Token), write('-').
+
+
+%------------------UPDATE BOARD------------------%
+% Function to update the token of a specific tile
+update_tile_token(Board, Row, Col, NewToken, NewBoard) :-
+    maplist(update_row_token(Row, Col, NewToken), Board, NewBoard).
+
+update_row_token(Row, Col, NewToken, RowList, NewRowList) :-
+    maplist(update_tile_token(Row, Col, NewToken), RowList, NewRowList).
+
+update_tile_token(Row, Col, NewToken, tile(Row, Col, Flowers, _), tile(Row, Col, Flowers, NewToken)) :- !.
+update_tile_token(_, _, _, Tile, Tile).
+
 
 %--------------DRAW BOTTOM BORDERS----------------%
 % Draw the bottom borders for the tiles with '++' as separators
