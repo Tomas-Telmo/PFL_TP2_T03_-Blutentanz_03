@@ -46,3 +46,5 @@ random_rotate(List, Rotated) :-
 randomize_tile_colors(tile(Row, Col, Colors, Marker), tile(Row, Col, RotatedColors, Marker)) :-
     random_rotate(Colors, RotatedColors).
 
+randomize_board(Board, RandomizedBoard) :-
+    maplist(randomize_tile_colors, Board, RandomizedBoard).

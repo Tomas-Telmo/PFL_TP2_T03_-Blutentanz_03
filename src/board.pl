@@ -13,13 +13,20 @@ display_initial_board(Width, Height, Board) :-
 
 % Generate a board with tiles based on the specified width and height
 initial_board(Width, Height, Board) :-
-	findall(tile(Row, Col, [o-orange, g-green, b-blue, x-black], '---'), 
-			(between(1, Height, Row), between(1, Width, Col)), 
-			DummyBord),
-    maplist(randomize_tile_colors, DummyBord, Board).
+	findall(
+        RowTiles,
+        (between(1, Height, Row),
+         findall(tile(Row, Col, [o-orange, g-green, b-blue, x-black], '---'),
+                 between(1, Width, Col),
+                 RowTiles)),
+        Board
+    ),
+    maplist(maplist(randomize_tile_colors), Board, RandomizedBoard),
+    display_dummy(RandomizedBoard).
 
 
 % Base case: no more rows to display
+%
 display_board(_, Row, Height) :-
 	Row > Height, !.
 display_board(Board, Row, Height) :-
@@ -48,7 +55,7 @@ draw_row(Tiles) :-
 
 %------------------DRAW BORDERS------------------%
 % Draw the top borders for the tiles
-draw_top_borders([]).
+draw_top_borders([]) :- !.
 draw_top_borders([_ | Rest]) :-
     write('+-----+'),
     draw_top_borders(Rest).
@@ -56,13 +63,13 @@ draw_top_borders([_ | Rest]) :-
 
 %------------------DRAW FLOWERS------------------%
 % Draw the first row of flowers (top flowers) for all tiles
-draw_flower_row1([]).
+draw_flower_row1([]) :- !.
 draw_flower_row1([tile(_, _, [F1, F2, _, _], _) | Rest]) :-
     write('| '), display_color(F1), write(' '), display_color(F2), write(' |'),
     draw_flower_row1(Rest).
 
 % Draw the second row of flowers (bottom flowers) for all tiles
-draw_flower_row2([]).
+draw_flower_row2([]) :- !.
 draw_flower_row2([tile(_, _, [_, _, F3, F4], _) | Rest]) :-
     write('| '), display_color(F3), write(' '), display_color(F4), write(' |'),
     draw_flower_row2(Rest).
@@ -70,7 +77,7 @@ draw_flower_row2([tile(_, _, [_, _, F3, F4], _) | Rest]) :-
 
 %------------------DRAW TOKENS------------------%
 % Draw tokens (empty or player tokens)
-draw_tokens([]).
+draw_tokens([]) :- !.
 draw_tokens([tile(_, _, _, Token) | Rest]) :-
     write('| '), write(Token), write(' |'),
     draw_tokens(Rest).
@@ -78,7 +85,7 @@ draw_tokens([tile(_, _, _, Token) | Rest]) :-
 
 %--------------DRAW BOTTOM BORDERS----------------%
 % Draw the bottom borders for the tiles
-draw_bottom_borders([]).
+draw_bottom_borders([]) :- !.
 draw_bottom_borders([_ | Rest]) :-
     write('+-----+'),
     draw_bottom_borders(Rest).
@@ -108,7 +115,25 @@ rotate_specified_column(Board, ColNum, NewBoard) :-
 %------------------------------------------------------------------------------------------%
 
 sample_board([
-    [tile(1, 1, [o, g, b, x], '---'), tile(1, 2, [o, b, g, x], '---')],
-    [tile(2, 1, [b, x, g, o], '---'), tile(2, 2, [x, g, o, b], '---')]
+    [tile(1, 1, [o-orange, g-green, b-white, x-black], '---'), tile(1, 2, [o-orange, g-green, b-white, x-black], '---'), tile(1, 3, [o-orange, g-green, b-white, x-black], '---')],
+    [tile(2, 1, [o-orange, g-green, b-white, x-black], '---'), tile(2, 2, [o-orange, g-green, b-white, x-black], '---'), tile(2, 3, [o-orange, g-green, b-white, x-black], '---')]
 ]).
 
+
+% Base case: no more rows to display
+display_dummy([]) :- !.
+% Recursive case: display each row and then process the rest
+display_dummy([Row | Rest]) :-
+    draw_row(Row), % Draw the current row
+    nl,            % New line after the row
+    display_dummy(Rest), !. % Display the remaining rows
+
+test_display_sample_board :- 
+    !,
+    sample_board(Boarda), 
+    write('Original Board:~n'),nl, 
+    display_dummy(Boarda),
+    once(maplist(maplist(randomize_tile_colors), Boarda, RandomizedBoard)), 
+    rotate_specified_column(Boarda, 2, NewBoard),
+    write('Randomized Board:~n'),nl,
+    display_dummy(RandomizedBoard).
