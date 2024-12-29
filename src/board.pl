@@ -11,7 +11,7 @@ display_initial_board(Width, Height, Board) :-
 	initial_board(Width, Height, Board),
 	display_board(Board, 1, Height).
 
-% Generate a board with tiles based on the specified width and height
+% Generate a initial board with tiles based on the specified width and height
 initial_board(Width, Height, Board) :-
 	findall(
         RowTiles,
@@ -23,6 +23,10 @@ initial_board(Width, Height, Board) :-
     ),
     maplist(maplist(randomize_tile_colors), Board, RandomizedBoard),
     display_dummy(RandomizedBoard).
+
+
+
+% display_current_board(Board):-
 
 
 % Base case: no more rows to display
