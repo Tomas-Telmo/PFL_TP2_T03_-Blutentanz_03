@@ -33,12 +33,13 @@ play :-
     write('       >Enter board height:          '),read(Height),nl,
     write('       >Enter pieces per player:     '), read(PiecesPerPlayer),nl,nl,nl,nl,
     
-    
-    initial_state(config(Width, Height, PiecesPerPlayer, Player1_Type, Player2_Type), state(1, player(PiecesPerPlayer), player(PiecesPerPlayer), _ )).
-    
-    %game_cycle(GameState).
-    
+        
+    initial_state(config(Width, Height, PiecesPerPlayer, Player1_Type, Player2_Type), state(1, player(PiecesPerPlayer), player(PiecesPerPlayer), Board )),
 
+    game_loop(state(1, player(PiecesPerPlayer), player(PiecesPerPlayer), Board )).
+
+
+    
 
 %----------------------------------------GAME STATE----------------------------------------%
 
@@ -65,10 +66,10 @@ initial_state(config(Width, Height, PiecesPerPlayer, Player1_Type, Player2_Type)
     write('======================================='), nl,
 	format('Pieces per player: ~w\n', [PiecesPerPlayer]),nl,
     format('Board Width: ~w\n', [Width]),nl,
-    format('Board Height: ~w\n', [Height]),nl,nl,nl,
+    format('Board Height: ~w\n', [Height]),nl,
+    write('======================================='), nl,nl,nl,
     
     
-
     write('======================================='), nl,
     write('|               BEGIN!                 |'), nl,
     write('======================================='), nl,nl,
@@ -82,4 +83,22 @@ initial_state(config(Width, Height, PiecesPerPlayer, Player1_Type, Player2_Type)
 
 
 
+%----------------------------------------GAME LOOP----------------------------------------%
 
+game_loop(GameState):-
+    
+    %game_over(+GameState, -Winner)
+    show_winner(CurrentPlayer), !. % Important!
+
+game_loop(GameState):-
+    %display_game(+GameState),
+   
+    choose_move(CurrentBoard, X-Y),
+   
+    piece(CurrentPlayer, Piece), put_piece(CurrentBoard, X-Y, Piece, NewBoard),
+   
+    switch_player(CurrentPlayer, NewPlayer),
+   
+    game_loop([NewBoard, NewPlayer]).
+
+%------------------------------------------------------------------------------------------%
