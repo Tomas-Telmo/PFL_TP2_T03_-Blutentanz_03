@@ -13,9 +13,11 @@ display_initial_board(Width, Height, Board) :-
 
 % Generate a board with tiles based on the specified width and height
 initial_board(Width, Height, Board) :-
-	findall(tile(Row, Col, [o-blue, g-green, b-red, x-yellow], '---'), 
+	findall(tile(Row, Col, [o-orange, g-green, b-blue, x-black], '---'), 
 			(between(1, Height, Row), between(1, Width, Col)), 
-			Board).
+			DummyBord),
+    maplist(randomize_tile_colors, DummyBord, Board).
+
 
 % Base case: no more rows to display
 display_board(_, Row, Height) :-
@@ -81,7 +83,32 @@ draw_bottom_borders([_ | Rest]) :-
     write('+-----+'),
     draw_bottom_borders(Rest).
 
+
+
+%--------------ROTATE ROWS OR COLUMNS BY 90------------%
+rotater([], []).
+rotater([tile(Row, Col, Colors, Symbol) | Rest],[tile(Row, Col, RotatedColors, Symbol) | RotatedRest]) :-
+    rotate_90_right(Colors, RotatedColors),
+    rotater(Rest, RotatedRest).          
+
+%-------------CHECK ROW EXISTS AND ROTATE ROW-------%
+rotate_specified_row(Board, RowNum, NewBoard) :-
+    nth1(RowNum, Board, Row, RestBoard),
+    rotater(Row, RotatedRow),
+    nth1(RowNum, NewBoard, RotatedRow, RestBoard).
+
+%------------CHECK COLUMN EXISTS AND ROTATE COLUMN----%
+rotate_specified_column(Board, ColNum, NewBoard) :-
+    transpose(Board, TransposedBoard),            % Transpose the board to turn columns into rows
+    nth1(ColNum, TransposedBoard, Column, Rest), % Extract the column (now a row) and the rest of the transposed board
+    rotater(Column, RotatedColumn),              % Rotate the extracted column
+    nth1(ColNum, NewTransposed, RotatedColumn, Rest), % Insert the rotated column back
+    transpose(NewTransposed, NewBoard).          % Transpose back to get the original structure
+
 %------------------------------------------------------------------------------------------%
 
-
+sample_board([
+    [tile(1, 1, [o, g, b, x], '---'), tile(1, 2, [o, b, g, x], '---')],
+    [tile(2, 1, [b, x, g, o], '---'), tile(2, 2, [x, g, o, b], '---')]
+]).
 
