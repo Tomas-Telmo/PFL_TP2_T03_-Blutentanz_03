@@ -8,7 +8,7 @@
 % Display the starter board starting at row 1
 display_initial_board(Width, Height, Board) :-
     initial_board(Width, Height, Board),
-    display_dummy(Board).
+    display_dummy(Board,Width).
 
 % Generate an initial board with randomized tiles based on the specified width and height
 initial_board(Width, Height, RandomizedBoard) :-
@@ -23,8 +23,8 @@ initial_board(Width, Height, RandomizedBoard) :-
 
 
 % Display the board
-display_dummy(Board) :-
-    draw_top_borders(Board,0), nl,
+display_dummy(Board,Width) :-
+    draw_top_borders(Width,0), nl,
     display_dummy_rows(Board).
 
 display_dummy_rows([]) :- !.
@@ -48,23 +48,17 @@ draw_row(Tiles) :-
 
 %------------------DRAW BORDERS------------------%
 % Draw the top borders for the tiles with '++' as separators
-draw_top_borders([]).
+draw_top_borders(0,_).
 
-draw_top_borders([_ | []], Counter) :- 
-    Counter1 is Counter + 1,
-
-    write('+---- '),
-   format('~d', [Counter1]),
-    write(' ----+').
-
-draw_top_borders([_ | Rest],Counter) :-
-    Counter1 is Counter + 1,
+draw_top_borders(N_Collumns,Counter) :-
+    NEW_N_Collumns is N_Collumns - 1,
+    NEW_Counter is Counter + 1,
 
     write('+---- '),
-   format('~d', [Counter1]),
+   format('~d', [NEW_Counter]),
     write(' ----+'),
     
-    draw_top_borders(Rest,Counter1).
+    draw_top_borders(NEW_N_Collumns,NEW_Counter).
 
 %------------------DRAW FLOWERS------------------%
 
@@ -125,23 +119,3 @@ draw_bottom_borders([_ | Rest]) :-
 display_token('---') :- write('---').
 display_token(Token) :- write(' '), write(Token), write(' ').
 
-
-
-
-% Base case: no more rows to display
-display_dummy([]) :- !.
-% Recursive case: display each row and then process the rest
-display_dummy([Row | Rest]) :-
-    draw_row(Row), % Draw the current row
-    nl,            % New line after the row
-    display_dummy(Rest), !. % Display the remaining rows
-
-test_display_sample_board :- 
-    !,
-    sample_board(Boarda), 
-    write('Original Board:~n'),nl, 
-    display_dummy(Boarda),
-    once(maplist(maplist(randomize_tile_colors), Boarda, RandomizedBoard)), 
-    rotate_specified_column(Boarda, 2, NewBoard),
-    write('Randomized Board:~n'),nl,
-    display_dummy(RandomizedBoard).
