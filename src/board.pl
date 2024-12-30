@@ -15,7 +15,7 @@ initial_board(Width, Height, RandomizedBoard) :-
     findall(
         RowTiles,
         (between(1, Height, Row),
-         findall(tile(Row, Col, [(o-orange, '---'), (g-black, '---'), ( b-blue, '---'), ( ' '-black, ' ')]),
+         findall(tile(Row, Col, [(o-orange, 0-0), (g-black, 0-0), ( b-blue, 0-0), ( ' '-black, 0-1)]),
                  between(1, Width, Col),
                  RowTiles)),
         DefaultBoard),
@@ -121,9 +121,11 @@ draw_bottom_borders([_ | Rest]) :-
     write('+-----+-----+'),
     draw_bottom_borders(Rest).
 
-% Display the token
-display_token('---') :- write('---').
-display_token(Token) :- write(' '), write(Token), write(' ').
+% Display the token (player-pieceNumber)
+display_token(0-0) :- write('---').
+display_token(0-1) :- write('   ').
+display_token(1-T) :- write(' '), display_color(T-orange), write(' ').
+display_token(2-T) :- write(' '), display_color(T-blue), write(' ').
 
 
 
