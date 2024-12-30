@@ -43,8 +43,28 @@ random_rotate(List, Rotated) :-
     rotate_n_times(List, N, Rotated).
 
 % randomize each tile, functuin for the begining of the game
-randomize_tile_colors(tile(Row, Col, Colors, Marker), tile(Row, Col, RotatedColors, Marker)) :-
-    random_rotate(Colors, RotatedColors).
+randomize_tile_flowers(tile(Row, Col, Flowers), tile(Row, Col, Rotatedflowers)) :-
+    random_rotate(Flowers, Rotatedflowers).
 
-randomize_board(Board, RandomizedBoard) :-
-    maplist(randomize_tile_colors, Board, RandomizedBoard).
+
+%--------------ROTATE ROWS OR COLUMNS BY 90------------%
+rotater([], []).
+rotater([tile(Row, Col, Colors, Symbol) | Rest],[tile(Row, Col, RotatedColors, Symbol) | RotatedRest]) :-
+    rotate_90_right(Colors, RotatedColors),
+    rotater(Rest, RotatedRest).          
+
+%-------------CHECK ROW EXISTS AND ROTATE ROW-------%
+rotate_specified_row(Board, RowNum, NewBoard) :-
+    nth1(RowNum, Board, Row, RestBoard),
+    rotater(Row, RotatedRow),
+    nth1(RowNum, NewBoard, RotatedRow, RestBoard).
+
+%------------CHECK COLUMN EXISTS AND ROTATE COLUMN----%
+rotate_specified_column(Board, ColNum, NewBoard) :-
+    transpose(Board, TransposedBoard),            % Transpose the board to turn columns into rows
+    nth1(ColNum, TransposedBoard, Column, Rest), % Extract the column (now a row) and the rest of the transposed board
+    rotater(Column, RotatedColumn),              % Rotate the extracted column
+    nth1(ColNum, NewTransposed, RotatedColumn, Rest), % Insert the rotated column back
+    transpose(NewTransposed, NewBoard).          % Transpose back to get the original structure
+
+%------------------------------------------------------------------------------------------%
