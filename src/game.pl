@@ -3,8 +3,9 @@
 :- use_module(library(random)).
 :- consult(board).
 :- consult(playerSettings).
-
+:- consult(utils).
 %----------------------------------------START GAME----------------------------------------%
+
 
 % Launch the game
 play :-
@@ -21,7 +22,7 @@ play :-
     write('======================================='), nl,nl,nl,nl,
    
     write('Choose game type (1-4): '), 
-    read(GameType),
+    read_number(GameType),clear_buffer,
         
 	initial_player_settings(GameType, _, _, Player1_Type, Player2_Type),
 
@@ -29,9 +30,9 @@ play :-
     write('|            GAME CONFIGS             |'), nl,
     write('======================================='), nl,
 
-    write('       >Enter board width:           '),read(Width),nl,
-    write('       >Enter board height:          '),read(Height),nl,
-    write('       >Enter pieces per player:     '), read(PiecesPerPlayer),nl,nl,nl,nl,
+    write('       >Enter board width:           '), read_number(Width),clear_buffer,nl,
+    write('       >Enter board height:          '), read_number(Height),clear_buffer, nl,
+    write('       >Enter pieces per player:     '), read_number(PiecesPerPlayer),clear_buffer,nl,nl,nl,nl,
     
         
     initial_state(config(Width, Height, PiecesPerPlayer, Player1_Type, Player2_Type), state(1, player(PiecesPerPlayer), player(PiecesPerPlayer), Board )),
