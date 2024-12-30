@@ -8,129 +8,122 @@
 % Display the starter board starting at row 1
 display_initial_board(Width, Height, Board) :-
     initial_board(Width, Height, Board),
-    display_board(Board, 1, Height).
+    display_dummy(Board).
 
-% Generate an initial board with tiles based on the specified width and height
-initial_board(Width, Height, Board) :-
-    findall(tile(Row, Col, [o-orange, g-black, b-blue, ' '-black ], '---'), 
-            (between(1, Height, Row), between(1, Width, Col)), 
-            DummyBoard),
-    maplist(randomize_tile_colors, DummyBoard, Board).
+% Generate an initial board with randomized tiles based on the specified width and height
+initial_board(Width, Height, RandomizedBoard) :-
+    findall(
+        RowTiles,
+        (between(1, Height, Row),
+         findall(tile(Row, Col, [(o-orange, '---'), (g-black, '---'), ( b-blue, '---'), ( ' '-black, ' ')]),
+                 between(1, Width, Col),
+                 RowTiles)),
+        DefaultBoard),
+    maplist(maplist(randomize_tile_flowers), DefaultBoard, RandomizedBoard).
 
-% Base case: no more rows to display
-display_board(_, Row, Height) :-
-    Row > Height, !.
-display_board(Board, Row, Height) :-
-    display_row(Board, Row),  
-    nl,                       
-    NextRow is Row + 1,       
-    display_board(Board, NextRow, Height).
 
-% Display a single row
-display_row(Board, Row) :-
-    findall(tile(Row, Col, Flowers, Token), member(tile(Row, Col, Flowers, Token), Board), Tiles),
-    draw_row(Tiles).
+% Display the board
+display_dummy(Board) :-
+    draw_top_borders(Board,0), nl,
+    display_dummy_rows(Board).
+
+display_dummy_rows([]) :- !.
+display_dummy_rows([Row | Rest]) :-
+    draw_row(Row), 
+    nl,
+    display_dummy_rows(Rest).
+
 
 % Draw the entire row in sections with '++' separators
 draw_row(Tiles) :-
-    draw_top_borders(Tiles), 
-    nl,
-    draw_flower_row1(Tiles), 
-    nl,
-    draw_flower_dividers(Tiles), 
-    nl,
-    draw_flower_row2(Tiles), 
-    nl,
-    draw_flower_dividers(Tiles), 
-    nl,
-    draw_bottom_borders(Tiles), 
-    nl.
+    draw_flower_row1(Tiles), nl,
+
+    draw_flower_tokens1(Tiles), nl,
+
+    draw_flower_row2(Tiles), nl,
+
+    draw_flower_tokens2(Tiles), nl,
+
+    draw_bottom_borders(Tiles).
 
 %------------------DRAW BORDERS------------------%
 % Draw the top borders for the tiles with '++' as separators
 draw_top_borders([]).
-draw_top_borders([_ | []]) :- write('+-----+-----+').
-draw_top_borders([_ | Rest]) :-
-    write('+-----+-----++'),
-    draw_top_borders(Rest).
+
+draw_top_borders([_ | []], Counter) :- 
+    Counter1 is Counter + 1,
+
+    write('+---- '),
+   format('~d', [Counter1]),
+    write(' ----+').
+
+draw_top_borders([_ | Rest],Counter) :-
+    Counter1 is Counter + 1,
+
+    write('+---- '),
+   format('~d', [Counter1]),
+    write(' ----+'),
+    
+    draw_top_borders(Rest,Counter1).
 
 %------------------DRAW FLOWERS------------------%
-% Draw the first row of flowers (top flowers) for all tiles
+
+% Draw row1 flowers
 draw_flower_row1([]).
-draw_flower_row1([tile(_, _, [F1, F2, _, _], _) | []]) :-
-    write('|  '), display_color(F1), write('  |  '), display_color(F2), write('  |').
-draw_flower_row1([tile(_, _, [F1, F2, _, _], _) | Rest]) :-
-    write('|  '), display_color(F1), write('  |  '), display_color(F2), write('  ||'),
+
+draw_flower_row1([tile(_, _, [( Color1, _), ( Color2, _), _, _]) | []]) :-
+    write('|  '), display_color(Color1), write('  |  '), display_color(Color2), write('  |').
+
+draw_flower_row1([tile(_, _, [( Color1, _), ( Color2, _), _, _]) | Rest]) :-
+    write('|  '), display_color(Color1), write('  |  '), display_color(Color2), write('  |'),
     draw_flower_row1(Rest).
 
-% Draw the second row of flowers (bottom flowers) for all tiles
+
+% Draw row1 tokens
+draw_flower_tokens1([]).
+
+draw_flower_tokens1([tile(_, _, [( _, Token1), ( _, Token2), _, _]) | []]) :-
+    write('| '), display_token(Token1), write(' | '), display_token(Token2), write(' |').
+
+draw_flower_tokens1([tile(_, _, [( _, Token1), ( _, Token2), _, _]) | Rest]) :-
+    write('| '), display_token(Token1), write(' | '), display_token(Token2), write(' |'),
+    draw_flower_tokens1(Rest).
+
+
+% Draw row2 flowers
 draw_flower_row2([]).
-draw_flower_row2([tile(_, _, [_, _, F3, F4], _) | []]) :-
-    write('|  '), display_color(F3), write('  |  '), display_color(F4), write('  |').
-draw_flower_row2([tile(_, _, [_, _, F3, F4], _) | Rest]) :-
-    write('|  '), display_color(F3), write('  |  '), display_color(F4), write('  ||'),
+
+draw_flower_row2([tile(_, _, [_, _, ( Color3, _), ( Color4, _)]) | []]) :-
+    write('|  '), display_color(Color3), write('  |  '), display_color(Color4), write('  |').
+
+draw_flower_row2([tile(_, _, [_, _, ( Color3, _), ( Color4, _)]) | Rest]) :-
+    write('|  '), display_color(Color3), write('  |  '), display_color(Color4), write('  |'),
     draw_flower_row2(Rest).
 
-% Draw dashes below a row of flowers with token
-draw_flower_dividers([]).
-draw_flower_dividers([tile(_, _, _, Token) | []]) :-
-    write('| '), display_token(Token), write(' | '), display_token(Token), write(' |').
-draw_flower_dividers([tile(_, _, _, Token) | Rest]) :-
-    write('| '), display_token(Token), write(' | '), display_token(Token), write(' ||'),
-    draw_flower_dividers(Rest).
+% Draw row2 tokens
+draw_flower_tokens2([]).
 
-% Display the token, changing to -X- if it has a player
-display_token('---') :- write('---').
-display_token(Token) :- write('-'), write(Token), write('-').
+draw_flower_tokens2([tile(_, _, [_, _, ( _, Token3), ( _, Token4)]) | []]) :-
+    write('| '), display_token(Token3), write(' | '), display_token(Token4), write(' |').
 
-
-%------------------UPDATE BOARD------------------%
-% Function to update the token of a specific tile
-update_tile_token(Board, Row, Col, NewToken, NewBoard) :-
-    maplist(update_row_token(Row, Col, NewToken), Board, NewBoard).
-
-update_row_token(Row, Col, NewToken, RowList, NewRowList) :-
-    maplist(update_tile_token(Row, Col, NewToken), RowList, NewRowList).
-
-update_tile_token(Row, Col, NewToken, tile(Row, Col, Flowers, _), tile(Row, Col, Flowers, NewToken)) :- !.
-update_tile_token(_, _, _, Tile, Tile).
+draw_flower_tokens2([tile(_, _, [_, _, ( _, Token3), ( _, Token4)]) | Rest]) :-
+    write('| '), display_token(Token3), write(' | '), display_token(Token4), write(' |'),
+    draw_flower_tokens2(Rest).
 
 
 %--------------DRAW BOTTOM BORDERS----------------%
-% Draw the bottom borders for the tiles with '++' as separators
 draw_bottom_borders([]).
-draw_bottom_borders([_ | []]) :-
+
+draw_bottom_borders([_ | []]) :- 
     write('+-----+-----+').
+
 draw_bottom_borders([_ | Rest]) :-
-    write('+-----+-----++'),
+    write('+-----+-----+'),
     draw_bottom_borders(Rest).
 
+% Display the token
+display_token('---') :- write('---').
+display_token(Token) :- write(' '), write(Token), write(' ').
 
 
-%--------------ROTATE ROWS OR COLUMNS BY 90------------%
-rotater([], []).
-rotater([tile(Row, Col, Colors, Symbol) | Rest],[tile(Row, Col, RotatedColors, Symbol) | RotatedRest]) :-
-    rotate_90_right(Colors, RotatedColors),
-    rotater(Rest, RotatedRest).          
-
-%-------------CHECK ROW EXISTS AND ROTATE ROW-------%
-rotate_specified_row(Board, RowNum, NewBoard) :-
-    nth1(RowNum, Board, Row, RestBoard),
-    rotater(Row, RotatedRow),
-    nth1(RowNum, NewBoard, RotatedRow, RestBoard).
-
-%------------CHECK COLUMN EXISTS AND ROTATE COLUMN----%
-rotate_specified_column(Board, ColNum, NewBoard) :-
-    transpose(Board, TransposedBoard),            % Transpose the board to turn columns into rows
-    nth1(ColNum, TransposedBoard, Column, Rest), % Extract the column (now a row) and the rest of the transposed board
-    rotater(Column, RotatedColumn),              % Rotate the extracted column
-    nth1(ColNum, NewTransposed, RotatedColumn, Rest), % Insert the rotated column back
-    transpose(NewTransposed, NewBoard).          % Transpose back to get the original structure
-
-%------------------------------------------------------------------------------------------%
-
-sample_board([
-    [tile(1, 1, [o, g, b, x], '---'), tile(1, 2, [o, b, g, x], '---')],
-    [tile(2, 1, [b, x, g, o], '---'), tile(2, 2, [x, g, o, b], '---')]
-]).
 
