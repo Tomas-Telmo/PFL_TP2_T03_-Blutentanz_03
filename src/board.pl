@@ -24,7 +24,8 @@ initial_board(Width, Height, RandomizedBoard) :-
 
 % Display the board
 display_dummy(Board,Width) :-
-    draw_top_borders(Width,0), nl,
+    draw_top_coordinates(Width,0), nl,
+    draw_top_borders(Width), nl,
     display_dummy_rows(Board).
 
 display_dummy_rows([]) :- !.
@@ -48,17 +49,27 @@ draw_row(Tiles) :-
 
 %------------------DRAW BORDERS------------------%
 % Draw the top borders for the tiles with '++' as separators
-draw_top_borders(0,_).
 
-draw_top_borders(N_Collumns,Counter) :-
+draw_top_coordinates(0,_).
+draw_top_coordinates(N_Collumns,Counter) :-
     NEW_N_Collumns is N_Collumns - 1,
     NEW_Counter is Counter + 1,
 
-    write('+---- '),
+    write('      '),
    format('~d', [NEW_Counter]),
-    write(' ----+'),
+    write('      '),
     
-    draw_top_borders(NEW_N_Collumns,NEW_Counter).
+    draw_top_coordinates(NEW_N_Collumns,NEW_Counter).
+
+
+draw_top_borders(0).
+draw_top_borders(N_Collumns) :-
+    NEW_N_Collumns is N_Collumns - 1,
+
+    write('+-----+-----+'),
+
+    draw_top_borders(NEW_N_Collumns).
+
 
 %------------------DRAW FLOWERS------------------%
 
