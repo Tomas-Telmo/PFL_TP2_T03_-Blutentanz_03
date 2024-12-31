@@ -1,17 +1,25 @@
-put_piece(CurrentBoard, X-Y, Row-Column-Color, NewBoard) :- 
-    update_board(CurrentBoard, X-Y, 0-0, TempBoard),
-    update_board(TempBoard, Row-Column, X-Y-Color, NewBoard).
+move_put_piece(CurrentBoard, Player_Piece, Row-Column-Color, NewBoard) :- 
+    move_update_board(CurrentBoard, Player_Piece, 0-0, TempBoard).
+
+move_update_board([], _, _, []).
+move_update_board([Row | Rest], Player_Piece, TargetValue, [UpdatedRow | UpdatedRest]) :-
+    move_update_row(Player_Piece, TargetValue, Row, UpdatedRow), 
+    move_update_board(Rest, Player_Piece, TargetValue, UpdatedRest).
+
+move_update_row(_, _, [], []). % Base case: empty row
+move_update_row(Player-Piece, TargetValue, [tile(_, _, [( _, Player-Piece), ( _, _), ( _, _), ( _, _)]) | Rest], [tile(_, _, [( _, TargetValue), ( _, _), ( _, _), ( _, _)])|Rest]).
+move_update_row(Player-Piece, TargetValue, [tile(_, _, [( _, _), ( _, Player-Piece), ( _, _), ( _, _)]) | Rest], [tile(_, _, [( _, _), ( _, TargetValue), ( _, _), ( _, _)])|Rest]).
+move_update_row(Player-Piece, TargetValue, [tile(_, _, [( _, _), ( _, _), ( _, Player-Piece), ( _, _)]) | Rest], [tile(_, _, [( _, _), ( _, _), ( _, TargetValue), ( _, _)])|Rest]).
+move_update_row(Player-Piece, TargetValue, [tile(_, _, [( _, _), ( _, _), ( _, _), ( _, Player-Piece)]) | Rest], [tile(_, _, [( _, _), ( _, _), ( _, _), ( _, TargetValue)])|Rest]).
+move_update_row(Player-Piece, TargetValue, [tile(X, Y, Tokens) | Rest], [tile(X, Y, Tokens) | UpdatedRest]) :-
+    \+ member((_, Player-Piece), Tokens),
+    move_update_row(Player-Piece, TargetValue, Rest, UpdatedRest).
 
 
-update_board(Board, Row-Column, NewValue, UpdatedBoard) :-
-    nth1(Row, Board, OldRow),          % Get the row at position `Row`
-    update_row(OldRow, Column, NewValue, UpdatedRow), % Update the column in the row
-    replace(Board, Row, UpdatedRow, UpdatedBoard). % Replace the old row with the updated row
 
-update_row(Row, Column, NewValue, UpdatedRow) :-
-    nth1(Column, Row, _, Rest),       % Remove the element at `Column`, leaving `Rest`
-    nth1(Column, UpdatedRow, NewValue, Rest). % Insert `NewValue` at `Column`
-
-replace(List, Index, NewElement, NewList) :-
-    nth1(Index, List, _, Rest),      % Remove the element at `Index`, leaving `Rest`
-    nth1(Index, NewList, NewElement, Rest). % Insert `NewElement` at `Index`
+board([
+    [tile(1, 1, [(o-orange, 1-2), (g-black, 0-0), (b-blue, 0-0), (' '-black, 0-1)]),
+     tile(1, 2, [(o-orange, 0-0), (g-black, 0-0), (b-blue, 0-0), (' '-black, 0-1)])],
+    [tile(2, 1, [(o-orange, 0-0), (g-black, 0-0), (b-blue, 0-0), (' '-black, 0-1)]),
+     tile(2, 2, [(o-orange, 0-0), (g-black, 0-0), (b-blue, 0-0), (' '-black, 0-1)])]
+]).
