@@ -1,6 +1,8 @@
 :- use_module(library(lists)).
 :- use_module(library(between)).
 :- use_module(library(random)).
+
+
 :- consult(board).
 :- consult(playerSettings).
 :- consult(utils).
@@ -30,14 +32,27 @@ play :-
     write('|            GAME CONFIGS             |'), nl,
     write('======================================='), nl,
 
-    write('       >Enter board width:           '), read_number(Width),clear_buffer,nl,
+    write('       >Enter board width:           '), read_number(Width),clear_buffer, nl,
+    nl,
     write('       >Enter board height:          '), read_number(Height),clear_buffer, nl,
-    write('       >Enter pieces per player:     '), read_number(PiecesPerPlayer),clear_buffer,nl,nl,nl,nl,
+    write('       >Enter pieces per player:     '), read_number(PiecesUnplaced),clear_buffer,nl,
+    write('      >Enter pieces necessary to win:     '), read_number(PiecesNecessaryToWin),clear_buffer,nl,nl,nl,nl,
     
         
-    initial_state(config(Width, Height, PiecesPerPlayer, Player1_Type, Player2_Type), state(1, player(PiecesPerPlayer), player(PiecesPerPlayer), Board )),
+    %initial_state(C0nfig, Game_State),
+        %config(Width, Height)
+        %game_state(Round, Player1_Info, Player2_Info, PiecesNecessaryToWin, CurrentPlayer ,Board)),
 
-    game_loop(state(1, player(PiecesPerPlayer), player(PiecesPerPlayer), Board )).
+    %game_state(ROUND, (Player1_Type,Player1_PiecesUnplaced, PLayer1_PiecesDelivered),(Player2_Type,Player2_PiecesUnplaced, PLayer2_PiecesDelivered),PiecesNecessaryToWin,CurrentPlayer, Board )),
+
+
+    initial_state(game_config(Width, Height), game_state(1, player1Info(Player1_Type,PiecesUnplaced, 0), player2Info(Player2_Type,PiecesUnplaced, 0),PiecesNecessaryToWin, player1, Board )),
+
+    
+    
+    game_loop(game_state(1, player1Info(Player1_Type,PiecesUnplaced, 0), player2Info(Player2_Type,PiecesUnplaced, 0), PiecesNecessaryToWin, player1, Board )). 
+    
+
 
 
     
@@ -60,35 +75,39 @@ play :-
 % Board is the current state of the game board.
 
 
-initial_state(config(Width, Height, PiecesPerPlayer, Player1_Type, Player2_Type), state(1, player(Player1_Pieces), player(Player2_Pieces), Board)) :-
+  initial_state(game_config(Width, Height), game_state(Round, player1Info(Player1_Type,Player1_PiecesUnplaced, 0), player2Info(Player2_Type,Player2_PiecesUnplaced, 0),PiecesNecessaryToWin, CurrentPlayer, Board )) :-
 	
     write('======================================='), nl,
-    write('|            GAME STARTING...         |'), nl,
+    write('|            GAME SETTINGS...         |'), nl,
     write('======================================='), nl,
-	format('Pieces per player: ~w\n', [PiecesPerPlayer]),nl,
     format('Board Width: ~w\n', [Width]),nl,
     format('Board Height: ~w\n', [Height]),nl,
+    format('Player 1: ~w\n', [Player1_Type]),nl,
+    format('Player 2: ~w\n', [Player2_Type]),nl,
+    format('Pieces necessary to win: ~w\n', [PiecesNecessaryToWin]),nl,
     write('======================================='), nl,nl,nl,
     
-    
+
+	display_initial_board(Width, Height, Board),
+
+
     write('======================================='), nl,
-    write('|               BEGIN!                 |'), nl,
-    write('======================================='), nl,nl,
-    format('Player 1: ~w\n', [Player1_Type]),nl,
-    format('Pieces remaining: ~w\n', [Player1_Pieces]),nl,nl,
-	
-	format('Player 2: ~w\n', [Player2_Type]),nl,
-	format('Pieces remaining: ~w\n', [Player2_Pieces]),nl,
-	
-	display_initial_board(Width, Height, Board).
+    format('|               ROUND ~w               |', [Round]),nl,
+    write('======================================='), nl,
 
+    format('------> ~w:                 ', [CurrentPlayer]),nl,
 
+    format('Pieces remaining: ~w\n', [Player1_PiecesUnplaced]),nl,nl.
+	
+	
+	%format('Pieces remaining: ~w\n', [Player2_PiecesUnplaced]),nl,nl,nl,
+	
 
 %----------------------------------------GAME LOOP----------------------------------------%
 
 game_loop(GameState):-
     
-    %game_over(+GameState, -Winner)
+    game_over(GameState, Winner),
     show_winner(CurrentPlayer), !. % Important!
 
 game_loop(GameState):-
