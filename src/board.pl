@@ -6,9 +6,9 @@
 
 %----------------------------------------DISPLAY INITIAL BOARD----------------------------------------%
 % Display the starter board starting at row 1
-display_initial_board(Width, Height, Board) :-
-    initial_board(Width, Height, Board),
-    display_dummy(Board,Width).
+generate_initial_board(Width, Height, Board) :-
+    initial_board(Width, Height, Board).
+    %display_dummy(Board,Width).
 
 % Generate an initial board with randomized tiles based on the specified width and height
 initial_board(Width, Height, RandomizedBoard) :-
@@ -24,17 +24,8 @@ initial_board(Width, Height, RandomizedBoard) :-
 
 %----------------------------------------DISPLAY CURRENT BOARD----------------------------------------%
 
-
-
-
-
-
-
-
-
-%----------------------------------------REST OF DISPLAY----------------------------------------%
 % Display the board
-display_dummy(Board,Width) :-
+display_current_board(Board,Width) :-
     draw_top_coordinates(Width,0), nl,
     draw_top_borders(Width), nl,
     display_dummy_rows(Board).
