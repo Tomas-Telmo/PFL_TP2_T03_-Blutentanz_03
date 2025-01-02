@@ -71,26 +71,64 @@ replace_nth1([H|Rest], N, Elem, [H|UpdatedRest]) :-
 %///////////////////////////////////////////////////////////////////////////////////////////////////%
 %---------------------- CHECK POSSIBLE MOVE---------------------------------------------%
 %///////////////////////////////////////////////////////////////////////////////////////////////////%
-
-is_move_possible(CurrentBoard, Player-Piece, Row-Col-Color, NewFinalBoard):-
-
-
-
-
+is_move_possible(CurrentBoard, game_config(Width, Height), Current_Player, Current_Player-Piece, Row-Col-Color) :-
+    within_bounds(game_config(Width, Height), Row-Col),
+    empty_tile(CurrentBoard, Row-Col-Color),
+    friendly_color(Current_Player, Row-Col-Color),
 
 
 
+%----------------------CHECK IF THE POSITION IS WITHIN BOUNDS---------------------------%
+within_bounds(game_config(Width, Height), Row-Col) :-
+    Row > 0,
+    Col > 0,
+    Row =< Height,
+    Col =< Width.
+
+%----------------------CHECK IF THE TILE IS EMPTY---------------------------%
+empty_tile(CurrentBoard, Row-Col-Color) :-
+    nth1(Row, CurrentBoard, TargetRow),
+    empty_tile_aux(TargetRow, Col, Color). 
+
+empty_tile_aux(Row, Col, Color) :- nth1(Col, Row, tile(_, _, [( _-Color, 0-0), _, _, _])).
+empty_tile_aux(Row, Col, Color) :- nth1(Col, Row, tile(_, _, [ _,(_-Color, 0-0) , _, _])).
+empty_tile_aux(Row, Col, Color) :- nth1(Col, Row, tile(_, _, [ _, _,( _-Color, 0-0), _])).
+empty_tile_aux(Row, Col, Color) :- nth1(Col, Row, tile(_, _, [ _, _, _,( _-Color, 0-0)])).
 
 
+%----------------------CHECK IF THE COLOR IS FRIENDLY---------------------------%
+%Checks if the color of the tile is the same as the player's color or neutral%
+friendly_color(1, _-_-blue).
+friendly_color(_, _-_-black).
+friendly_color(2, _-_-orange).
 
 
+%----------------------CHECK IF THE TILE IS CLOSE TO THE PLAYER'S PIECE---------------------------%
+%Checks if the tile is close to the player's piece(check the coordinates with find-player pice func)%
+is_close_tile(CurrentBoard, Player-Piece) :- 
+    nth1(Row, CurrentBoard, TargetRow),
+    is_close_tile_aux(TargetRow, Col, Color, Player-Piece).
 
+
+%----------------------GET TOKEN's TILE----------------------------%
+find_player_piece([], _, _) :- fail.
+find_player_piece([Row | Rest], Player_Piece, RowNum-ColNum) :- 
+    find_player_piece_aux(Row, Player_Piece, RowNum-ColNum);
+    find_player_piece(Rest, Player_Piece, RowNum-ColNum).
+
+find_player_piece_aux([], _, _) :- fail.
+find_player_piece_aux([tile(Row, Col, [(_, Player_Piece), _, _, _]) | _], Player_Piece, Row-Col).
+find_player_piece_aux([tile(Row, Col, [_, (_, Player_Piece), _, _]) | _], Player_Piece, Row-Col).
+find_player_piece_aux([tile(Row, Col, [_, _, (_, Player_Piece), _]) | _], Player_Piece, Row-Col).
+find_player_piece_aux([tile(Row, Col, [_, _, _, (_, Player_Piece)]) | _], Player_Piece, Row-Col).
+find_player_piece_aux([_ | Rest], Player_Piece, Row-Col) :- 
+    find_player_piece_aux(Rest, Player_Piece, Row-Col).
 
 
 
 board([
-    [tile(1, 1, [(o-orange, 1-2), (g-black, 0-0), (b-blue, 0-0), (' '-black, 0-1)]),
-     tile(1, 2, [(o-orange, 0-0), (g-black, 0-0), (b-blue, 0-0), (' '-black, 0-1)])],
+    [tile(1, 1, [(o-orange, 0-0), (g-black, 0-0), (b-blue, 0-0), (' '-black, 0-1)]),
+     tile(1, 2, [(o-orange, 0-0), (g-black, 1-2), (b-blue, 0-0), (' '-black, 0-1)])],
     [tile(2, 1, [(o-orange, 0-0), (g-black, 0-0), (b-blue, 0-0), (' '-black, 0-1)]),
      tile(2, 2, [(o-orange, 0-0), (g-black, 0-0), (b-blue, 0-0), (' '-black, 0-1)])]
 ]).
