@@ -4,7 +4,7 @@
 :- consult(utils).
 
 
-%----------------------------------------DISPLAY BOARD----------------------------------------%
+%----------------------------------------DISPLAY INITIAL BOARD----------------------------------------%
 % Display the starter board starting at row 1
 display_initial_board(Width, Height, Board) :-
     initial_board(Width, Height, Board),
@@ -22,6 +22,17 @@ initial_board(Width, Height, RandomizedBoard) :-
     maplist(maplist(randomize_tile_flowers), DefaultBoard, RandomizedBoard).
 
 
+%----------------------------------------DISPLAY CURRENT BOARD----------------------------------------%
+
+
+
+
+
+
+
+
+
+%----------------------------------------REST OF DISPLAY----------------------------------------%
 % Display the board
 display_dummy(Board,Width) :-
     draw_top_coordinates(Width,0), nl,

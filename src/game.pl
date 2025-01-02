@@ -39,18 +39,14 @@ play :-
     write('      >Enter pieces necessary to win:     '), read_number(PiecesNecessaryToWin),clear_buffer,nl,nl,nl,nl,
     
         
-    %initial_state(C0nfig, Game_State),
-        %config(Width, Height)
-        %game_state(Round, Player1_Info, Player2_Info, PiecesNecessaryToWin, CurrentPlayer ,Board)),
-
-    %game_state(ROUND, (Player1_Type,Player1_PiecesUnplaced, PLayer1_PiecesDelivered),(Player2_Type,Player2_PiecesUnplaced, PLayer2_PiecesDelivered),PiecesNecessaryToWin,CurrentPlayer, Board )),
+   
 
 
     initial_state(game_config(Width, Height), game_state(1, player1Info(Player1_Type,PiecesUnplaced, 0), player2Info(Player2_Type,PiecesUnplaced, 0),PiecesNecessaryToWin, player1, Board )),
 
     
     
-    game_loop(game_state(1, player1Info(Player1_Type,PiecesUnplaced, 0), player2Info(Player2_Type,PiecesUnplaced, 0), PiecesNecessaryToWin, player1, Board )). 
+    game_loop(game_state(1, player1Info(Player1_Type,PiecesUnplaced, 0), player2Info(Player2_Type,PiecesUnplaced, 0), PiecesNecessaryToWin, 1, Board )). 
     
 
 
@@ -65,17 +61,14 @@ play :-
 % Config is a configuration term containing the width and height of the board and the number of pieces per player.
 % State is the initial state of the game, with the first turn, players having the specified number of pieces, and the initial board setup.
 
-% state(TurnNo, Player1Info, Player2Info, Board) represents the current state of the game.
-% TurnNo is the current turn number.
-% Player1Info and Player2Info contain information about the players, such as the number of remaining pieces to place.
-% Board is the current state of the game board.
-% state(TurnNo, Player1Info, Player2Info, Board) represents the current state of the game.
-% TurnNo is the current turn number.
-% Player1Info and Player2Info contains the number of remaining pieces to place on the board.
-% Board is the current state of the game board.
+ %initial_state(Config, Game_State),
+        %config(Width, Height)
+        %game_state(Round, Player1_Info, Player2_Info, PiecesNecessaryToWin, CurrentPlayer ,Board)),
+
+    %game_state(ROUND, (Player1_Type,Player1_PiecesUnplaced, PLayer1_PiecesDelivered),(Player2_Type,Player2_PiecesUnplaced, PLayer2_PiecesDelivered),PiecesNecessaryToWin,CurrentPlayer, Board )),
 
 
-  initial_state(game_config(Width, Height), game_state(Round, player1Info(Player1_Type,Player1_PiecesUnplaced, 0), player2Info(Player2_Type,Player2_PiecesUnplaced, 0),PiecesNecessaryToWin, CurrentPlayer, Board )) :-
+  initial_state(game_config(Width, Height), game_state(Round, player1Info(Player1_Type,Player1_PiecesUnplaced, 0), player2Info(Player2_Type,_, 0),PiecesNecessaryToWin, CurrentPlayer, Board )) :-
 	
     write('======================================='), nl,
     write('|            GAME SETTINGS...         |'), nl,
@@ -95,7 +88,7 @@ play :-
     format('|               ROUND ~w               |', [Round]),nl,
     write('======================================='), nl,
 
-    format('------> ~w:                 ', [CurrentPlayer]),nl,
+    format('------> player~w:                 ', [CurrentPlayer]),nl,
 
     format('Pieces remaining: ~w\n', [Player1_PiecesUnplaced]),nl,nl.
 	
@@ -104,21 +97,47 @@ play :-
 	
 
 %----------------------------------------GAME LOOP----------------------------------------%
-
 game_loop(GameState):-
-    
-    game_over(GameState, Winner),
-    show_winner(CurrentPlayer), !. % Important!
+    %game_over(+GameState, -Winner) fails here if game is not over, goes to next clause
+    game_over(GameState, Winner), 
 
-game_loop(GameState):-
+    %show_winner(+Winner) displays the winner
+    show_winner(Winner), !. 
+
+game_loop( game_state(Round, player1Info(Player1_Type,Player1_PiecesUnplaced, 0), player2Info(Player2_Type,Player2_PiecesUnplaced, 0),PiecesNecessaryToWin, CurrentPlayer, Board )):-
     %display_game(+GameState),
+    display_game(GameState).
+    
+    %choose_move(CurrentBoard, X-Y),
    
-    choose_move(CurrentBoard, X-Y),
+   % piece(CurrentPlayer, Piece), put_piece(CurrentBoard, X-Y, Piece, NewBoard),
    
-    piece(CurrentPlayer, Piece), put_piece(CurrentBoard, X-Y, Piece, NewBoard),
+    %switch_player(CurrentPlayer, NewPlayer),
    
-    switch_player(CurrentPlayer, NewPlayer),
-   
-    game_loop([NewBoard, NewPlayer]).
+    %game_loop(game_state(Round, player1Info(Player1_Type,Player1_PiecesUnplaced, 0), player2Info(Player2_Type,Player2_PiecesUnplaced, 0),PiecesNecessaryToWin, CurrentPlayer, Board )).
 
-%------------------------------------------------------------------------------------------%
+%---------------------------------------GAME_OVER---------------------------------------------------%
+
+game_over( game_state(_, player1Info(_,_, PiecesNecessaryToWin), _ ,PiecesNecessaryToWin, _, _ ), 1). % player1 wins
+game_over( game_state(_, _, player2Info(_,_, PiecesNecessaryToWin) ,PiecesNecessaryToWin, _, _ ), 2).% player2 wins
+
+%---------------------------------------SHOW_WINNER---------------------------------------------------%
+show_winner(Winner):-
+    write('======================================='), nl,
+    write('|               GAME OVER             |'), nl,
+    write('======================================='), nl,
+    format('------> player~w wins!                 ', [Winner]),nl,nl,nl,nl.
+
+
+%-------------------------------------------DISPLAY_GAME-----------------------------------------------%
+display_game(game_state(Round, player1Info(Player1_Type,Player1_PiecesUnplaced, 0), player2Info(Player2_Type,Player2_PiecesUnplaced, 0),PiecesNecessaryToWin, CurrentPlayer, Board )):-
+
+    write('======================================='), nl,
+    format('|               ROUND ~w               |', [Round]),nl,
+    write('======================================='), nl,
+
+    format('------> player~w:                 ', [CurrentPlayer]),nl,
+
+    format('Pieces remaining: ~w\n', [Player1_PiecesUnplaced]),nl,nl.
+
+    
