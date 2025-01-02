@@ -39,10 +39,9 @@ play :-
     write('      >Enter pieces necessary to win:     '), read_number(PiecesNecessaryToWin),clear_buffer,nl,nl,nl,nl,
     
         
-   
 
 
-     initial_state(game_config(Width, Height), game_state(Round, player1Info(Player1_Type,Player1_PiecesUnplaced, 0), player2Info(Player2_Type,_, 0),PiecesNecessaryToWin, CurrentPlayer, boardInfo(Width, Height, Board) )),
+     initial_state(game_config(Width, Height), game_state(1, player1Info(Player1_Type,PiecesUnplaced, 0), player2Info(Player2_Type,PiecesUnplaced, 0),PiecesNecessaryToWin, 1, boardInfo(Width, Height, Board) )),
 
     
     
@@ -63,12 +62,12 @@ play :-
 
  %initial_state(Config, Game_State),
         %config(Width, Height)
-        %game_state(Round, Player1_Info, Player2_Info, PiecesNecessaryToWin, CurrentPlayer ,Board)),
+        %game_state(Round, Player1_Info, Player2_Info, PiecesNecessaryToWin, CurrentPlayer ,BoardInfo)),
 
-    %game_state(ROUND, (Player1_Type,Player1_PiecesUnplaced, PLayer1_PiecesDelivered),(Player2_Type,Player2_PiecesUnplaced, PLayer2_PiecesDelivered),PiecesNecessaryToWin,CurrentPlayer, Board )),
+    %game_state(ROUND, (Player1_Type,Player1_PiecesUnplaced, PLayer1_PiecesDelivered),(Player2_Type,Player2_PiecesUnplaced, PLayer2_PiecesDelivered),PiecesNecessaryToWin,CurrentPlayer, BoardInfo(Width,Height,Board) )),
 
 
-  initial_state(game_config(Width, Height), game_state(Round, player1Info(Player1_Type,Player1_PiecesUnplaced, 0), player2Info(Player2_Type,_, 0),PiecesNecessaryToWin, CurrentPlayer, boardInfo(Width, Height, Board) )) :-
+  initial_state(game_config(Width, Height), game_state(_, player1Info(Player1_Type,_, 0), player2Info(Player2_Type,_, 0),PiecesNecessaryToWin, _, boardInfo(Width, Height, Board) )) :-
 	
     write('======================================='), nl,
     write('|            GAME SETTINGS...         |'), nl,
@@ -82,7 +81,6 @@ play :-
     
 
 	generate_initial_board(Width, Height, Board).
-
 
 %----------------------------------------GAME LOOP----------------------------------------%
 game_loop(GameState):-
@@ -119,19 +117,32 @@ show_winner(Winner):-
 
 
 %-------------------------------------------DISPLAY_GAME-----------------------------------------------%
-display_game(game_state(Round, player1Info(Player1_Type,Player1_PiecesUnplaced, 0), player2Info(Player2_Type,Player2_PiecesUnplaced, 0),PiecesNecessaryToWin, CurrentPlayer, boardInfo(Width,_,Board) )):-
+% CASE- PLAYER 1 turn
+display_game(game_state(Round, player1Info(_,Player1_PiecesUnplaced, PLayer1_PiecesDelivered), _, _, 1, boardInfo(Width,_,Board) )):-
 
     write('======================================='), nl,
     format('|               ROUND ~w               |', [Round]),nl,
     write('======================================='), nl,
+    write('-------->Player1:                      '), nl,
 
-    format('------> player~w:                 ', [CurrentPlayer]),nl,
-
-    format('Pieces remaining: ~w\n', [Player1_PiecesUnplaced]),nl,nl,
-
+    format('Pieces in reserve: ~w\n', [Player1_PiecesUnplaced]),nl,
+    format('Pieces delivered: ~w\n', [PLayer1_PiecesDelivered]),nl,nl,
+    
     display_current_board(Board,Width),nl,nl,nl.
 
+% CASE- PLAYER 2 turn
+display_game(game_state(Round, _, player2Info(_, Player2_PiecesUnplaced, PLayer2_PiecesDelivered),_, 2, boardInfo(Width,_,Board))):-
 
+    write('======================================='), nl,
+   format('|               ROUND ~w               |', [Round]),nl,
+    write('======================================='), nl,
+
+     write('-------->Player2 :'), nl,nl,nl
+
+    format('Pieces in reserve: ~w\n', [Player2_PiecesUnplaced]),nl,
+    format('Pieces delivered: ~w\n', [PLayer2_PiecesDelivered]),nl,nl,
+    
+    display_current_board(Board,Width),nl,nl,nl.
 
 %-------------------------------------------Switch Player-----------------------------------------------%
 switch_player(1, 2).

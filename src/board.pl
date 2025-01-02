@@ -4,14 +4,10 @@
 :- consult(utils).
 
 
-%----------------------------------------DISPLAY INITIAL BOARD----------------------------------------%
-% Display the starter board starting at row 1
-generate_initial_board(Width, Height, Board) :-
-    initial_board(Width, Height, Board).
-    %display_dummy(Board,Width).
-
+%----------------------------------------generate INITIAL BOARD----------------------------------------%
 % Generate an initial board with randomized tiles based on the specified width and height
-initial_board(Width, Height, RandomizedBoard) :-
+
+generate_initial_board(Width, Height, RandomizedBoard) :-
     findall(
         RowTiles,
         (between(1, Height, Row),
