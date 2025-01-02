@@ -11,7 +11,7 @@ generate_initial_board(Width, Height, RandomizedBoard) :-
     findall(
         RowTiles,
         (between(1, Height, Row),
-         findall(tile(Row, Col, [(o-orange, '---'), (g-black, '---'), ( b-blue, '---'), ( ' '-black, ' ')]),
+         findall(tile(Row, Col, [(g-black, '---'), (o-orange, '---') , ( b-blue, '---'), ( ' '-black, ' ')]),
                  between(1, Width, Col),
                  RowTiles)),
         DefaultBoard),
@@ -21,52 +21,75 @@ generate_initial_board(Width, Height, RandomizedBoard) :-
 %----------------------------------------DISPLAY CURRENT BOARD----------------------------------------%
 
 % Display the board
-display_current_board(Board,Width) :-
-    draw_top_coordinates(Width,0), nl,
-    draw_top_borders(Width), nl,
-    display_dummy_rows(Board).
+display_current_board(Width, Height, Board) :-
+    display_board_rows(Height, Board),
+    draw_padding(0),
+    draw_bottom_borders(Width), nl,
+    draw_padding(0),
+    draw_X_coordinates(Width,0).
 
-display_dummy_rows([]) :- !.
-display_dummy_rows([Row | Rest]) :-
-    draw_row(Row), 
-    nl,
-    display_dummy_rows(Rest).
+display_board_rows(_,[]) :- !.
+display_board_rows(Collumn_Counter,[Row | Rest]) :-
+    draw_row(Row,Collumn_Counter),nl,
+
+    NEW_Collumn_Counter is Collumn_Counter - 1,
+
+    display_board_rows(NEW_Collumn_Counter,Rest).
 
 
 % Draw the entire row in sections with '++' separators
-draw_row(Tiles) :-
+draw_row(Tiles, Collumn_Counter) :-
+    draw_padding(0),
+    draw_top_borders(Tiles), nl,
+
+    draw_padding(0),
     draw_flower_row1(Tiles), nl,
 
+    draw_padding(1),
+    draw_Y_coordinates(Collumn_Counter),
+    draw_padding(2),
     draw_flower_tokens1(Tiles), nl,
 
+    draw_padding(0),
     draw_flower_row2(Tiles), nl,
 
-    draw_flower_tokens2(Tiles), nl,
+    draw_padding(0),
+    draw_flower_tokens2(Tiles).
 
-    draw_bottom_borders(Tiles).
 
-%------------------DRAW BORDERS------------------%
-% Draw the top borders for the tiles with '++' as separators
+%------------------DRAW PADDING------------------%
 
-draw_top_coordinates(0,_).
-draw_top_coordinates(N_Collumns,Counter) :-
+draw_padding(0) :- write('      ').
+
+draw_padding(1) :- write('    ').
+
+draw_padding(2) :- write(' ').
+
+%------------------DRAW COORDINATES------------------%
+draw_Y_coordinates(Counter):-
+    format('~d', [Counter]).
+    
+
+draw_X_coordinates(0,_).
+draw_X_coordinates(N_Collumns,Counter) :-
     NEW_N_Collumns is N_Collumns - 1,
     NEW_Counter is Counter + 1,
 
     write('      '),
-   format('~d', [NEW_Counter]),
+    format('~d', [NEW_Counter]),
     write('      '),
     
-    draw_top_coordinates(NEW_N_Collumns,NEW_Counter).
+    draw_X_coordinates(NEW_N_Collumns,NEW_Counter).
 
+%------------------DRAW BORDERS------------------%
 
-draw_top_borders(0).
-draw_top_borders(N_Collumns) :-
+draw_bottom_borders(0).
+draw_bottom_borders(N_Collumns) :-
     NEW_N_Collumns is N_Collumns - 1,
 
     write('+-----+-----+'),
 
-    draw_top_borders(NEW_N_Collumns).
+    draw_bottom_borders(NEW_N_Collumns).
 
 
 %------------------DRAW FLOWERS------------------%
@@ -114,15 +137,15 @@ draw_flower_tokens2([tile(_, _, [_, _, ( _, Token3), ( _, Token4)]) | Rest]) :-
     draw_flower_tokens2(Rest).
 
 
-%--------------DRAW BOTTOM BORDERS----------------%
-draw_bottom_borders([]).
+%--------------DRAW top BORDERS----------------%
+draw_top_borders([]).
 
-draw_bottom_borders([_ | []]) :- 
+draw_top_borders([_ | []]) :- 
     write('+-----+-----+').
 
-draw_bottom_borders([_ | Rest]) :-
+draw_top_borders([_ | Rest]) :-
     write('+-----+-----+'),
-    draw_bottom_borders(Rest).
+    draw_top_borders(Rest).
 
 % Display the token
 display_token('---') :- write('---').

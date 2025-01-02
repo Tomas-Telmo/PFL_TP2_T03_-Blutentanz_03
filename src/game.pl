@@ -113,36 +113,36 @@ show_winner(Winner):-
     write('======================================='), nl,
     write('|               GAME OVER             |'), nl,
     write('======================================='), nl,
-    format('------> player~w wins!                 ', [Winner]),nl,nl,nl,nl.
+    format('------> player~w wins!!!!!            ', [Winner]),nl,nl,nl,nl.
 
 
 %-------------------------------------------DISPLAY_GAME-----------------------------------------------%
 % CASE- PLAYER 1 turn
-display_game(game_state(Round, player1Info(_,Player1_PiecesUnplaced, PLayer1_PiecesDelivered), _, _, 1, boardInfo(Width,_,Board) )):-
+display_game(game_state(Round, player1Info(_,Player1_PiecesUnplaced, PLayer1_PiecesDelivered), _, _, 1, boardInfo(Width,Height,Board) )):-
 
     write('======================================='), nl,
     format('|               ROUND ~w               |', [Round]),nl,
     write('======================================='), nl,
-    write('-------->Player1:                      '), nl,
+    write('--------> Player1:                      '), nl,
 
-    format('Pieces in reserve: ~w\n', [Player1_PiecesUnplaced]),nl,
-    format('Pieces delivered: ~w\n', [PLayer1_PiecesDelivered]),nl,nl,
+    format('Pieces in reserve: ~w', [Player1_PiecesUnplaced]),nl,
+    format('Pieces delivered: ~w', [PLayer1_PiecesDelivered]),nl,nl,
     
-    display_current_board(Board,Width),nl,nl,nl.
+    display_current_board(Width,Height,Board),nl,nl,nl.
 
 % CASE- PLAYER 2 turn
-display_game(game_state(Round, _, player2Info(_, Player2_PiecesUnplaced, PLayer2_PiecesDelivered),_, 2, boardInfo(Width,_,Board))):-
+display_game(game_state(Round, _, player2Info(_, Player2_PiecesUnplaced, PLayer2_PiecesDelivered),_, 2, boardInfo(Width,Height,Board))):-
 
     write('======================================='), nl,
    format('|               ROUND ~w               |', [Round]),nl,
     write('======================================='), nl,
 
-     write('-------->Player2 :'), nl,nl,nl
+     write('--------> Player2 :'), nl,nl,nl,
 
-    format('Pieces in reserve: ~w\n', [Player2_PiecesUnplaced]),nl,
-    format('Pieces delivered: ~w\n', [PLayer2_PiecesDelivered]),nl,nl,
+    format('Pieces in reserve: ~w', [Player2_PiecesUnplaced]),nl,
+    format('Pieces delivered: ~w', [PLayer2_PiecesDelivered]),nl,nl,
     
-    display_current_board(Board,Width),nl,nl,nl.
+    display_current_board(Width,Height,Board),nl,nl,nl.
 
 %-------------------------------------------Switch Player-----------------------------------------------%
 switch_player(1, 2).
