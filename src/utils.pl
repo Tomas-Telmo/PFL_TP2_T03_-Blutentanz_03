@@ -56,9 +56,10 @@ display_color(Letter-Color):-
     
 % Aux to Predicate to print colored text
 print_color(Text, Color) :-
-    color_code(Color, Code),       
-    color_code(reset, Reset),      
-    format("~s~s~s", [Code, Text, Reset]). 
+    color_code(Color, Code),
+    color_code(reset, Reset),
+    format("~s~w~s", [Code, Text, Reset]).
+
 
   
 %funçao para rodar a lista 90 graus para a direita como so temos uma 2x2 podemos fazer a rotaçao manualmente.
