@@ -33,15 +33,13 @@ play :-
     write('======================================='), nl,
 
     write('       >Enter board width:           '), read_number(Width),clear_buffer, nl,
-    nl,
     write('       >Enter board height:          '), read_number(Height),clear_buffer, nl,
     write('       >Enter pieces per player:     '), read_number(PiecesUnplaced),clear_buffer,nl,
-    write('      >Enter pieces necessary to win:     '), read_number(PiecesNecessaryToWin),clear_buffer,nl,nl,nl,nl,
+    write('       >Enter pieces necessary to win:     '), read_number(PiecesNecessaryToWin),clear_buffer,nl,nl,nl,nl,
     
         
 
-
-     initial_state(game_config(Width, Height), game_state(1, player1Info(Player1_Type,PiecesUnplaced, 0), player2Info(Player2_Type,PiecesUnplaced, 0),PiecesNecessaryToWin, 1, boardInfo(Width, Height, Board) )),
+    initial_state(game_config(Width, Height), game_state(1, player1Info(Player1_Type,PiecesUnplaced, 0), player2Info(Player2_Type,PiecesUnplaced, 0),PiecesNecessaryToWin, 1, boardInfo(Width, Height, Board) )),
 
     
     
