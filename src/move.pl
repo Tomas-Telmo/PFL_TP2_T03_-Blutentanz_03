@@ -11,7 +11,7 @@ move_piece(CurrentBoard, game_config(Width, Height), Player, Player-Piece, Row-C
 %Move a piece from inside the board to the board
 move_put_piece(CurrentBoard, game_config(Width, Height), Player, Player-Piece, Row-Col-Color, NewFinalBoard) :-
     is_move_possible_start(CurrentBoard, game_config(Width, Height), Player, Player-Piece, Row-Col-Color),
-    move_place_piece(Current_Player, Row-Col-Color, Player-Piece, NewFinalBoard),
+    move_place_piece(CurrentBoard, Row-Col-Color, Player-Piece, NewFinalBoard),
     !. 
 
 
@@ -130,17 +130,17 @@ is_close_tile(CurrentBoard, Player-Piece, Row-Col-Color) :-
     Col >= PlayerCol - 1,
     Col =< PlayerCol + 1.
 
-is_close_tile_start(CurrentBoard,game_config(Width, Height), 1-Piece, 1-Col-Color) :-
-    nth1(Row, CurrentBoard, TargetRow),
+is_close_tile_start(CurrentBoard,_, 1-_, 1-Col-Color) :-
+    nth1(1, CurrentBoard, TargetRow),
     nth1(Col, TargetRow, Tile),
     find_next(Tile, Color, NextPosition),
-    start_friendly_tile(Player,NextPosition).
+    start_friendly_tile(1,NextPosition).
 
-is_close_tile_start(CurrentBoard,game_config(Width, Height), 2-Piece, Height-Col-Color) :-
-    nth1(Row, CurrentBoard, TargetRow),
+is_close_tile_start(CurrentBoard,game_config(_, Height), 2-_, Height-Col-Color) :-
+    nth1(Height, CurrentBoard, TargetRow),
     nth1(Col, TargetRow, Tile),
     find_next(Tile, Color, NextPosition),
-    start_friendly_tile(Player,NextPosition).
+    start_friendly_tile(2,NextPosition).
 
 
 %----------------------GET TOKEN's TILE----------------------------%

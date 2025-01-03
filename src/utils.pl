@@ -90,7 +90,7 @@ rotater([tile(Row, Col, Flowers) | Rest],[tile(Row, Col, RotatedFlowers) | Rotat
 rotate_specified_row(Board, RowNum, NewBoard) :-
     nth1(RowNum, Board, Row, RestBoard),
     rotater(Row, RotatedRow),
-    nth1(RowNum, RestBoard, RotatedRow, NewBoard).
+    nth1(RowNum, NewBoard, RotatedRow, RestBoard).
 
 %------------CHECK COLUMN EXISTS AND ROTATE COLUMN----%
 rotate_specified_column(Board, ColNum, NewBoard) :-
