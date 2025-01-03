@@ -32,11 +32,6 @@ clear_buffer:-
 
 
 
-
-
-
-
-
 % Map color names to ANSI escape sequences as strings
 color_code(black, "\e[30m"). 
 color_code(orange, "\e[38;2;255;165;0m").  
@@ -86,15 +81,16 @@ randomize_tile_flowers(tile(Row, Col, Flowers), tile(Row, Col, Rotatedflowers)) 
 
 %--------------ROTATE ROWS OR COLUMNS BY 90------------%
 rotater([], []).
-rotater([tile(Row, Col, Colors, Symbol) | Rest],[tile(Row, Col, RotatedColors, Symbol) | RotatedRest]) :-
-    rotate_90_right(Colors, RotatedColors),
+rotater([tile(Row, Col, Flowers) | Rest],[tile(Row, Col, RotatedFlowers) | RotatedRest]) :-
+    rotate_90_right(Flowers, RotatedFlowers),
     rotater(Rest, RotatedRest).          
+
 
 %-------------CHECK ROW EXISTS AND ROTATE ROW-------%
 rotate_specified_row(Board, RowNum, NewBoard) :-
     nth1(RowNum, Board, Row, RestBoard),
     rotater(Row, RotatedRow),
-    nth1(RowNum, NewBoard, RotatedRow, RestBoard).
+    nth1(RowNum, RestBoard, RotatedRow, NewBoard).
 
 %------------CHECK COLUMN EXISTS AND ROTATE COLUMN----%
 rotate_specified_column(Board, ColNum, NewBoard) :-
@@ -105,3 +101,11 @@ rotate_specified_column(Board, ColNum, NewBoard) :-
     transpose(NewTransposed, NewBoard).          % Transpose back to get the original structure
 
 %------------------------------------------------------------------------------------------%
+
+
+board([
+    [tile(1, 1, [(g-black, 0-0), (o-orange, 0-0), (b-blue, 0-0), (' '-yellow, 0-1)]),
+     tile(1, 2, [(g-black, 1-2),(o-orange, 0-0), (b-blue, 0-0), (' '-yellow, 0-1)])],
+    [tile(2, 1, [(g-black, 0-0),(o-orange, 0-0), (b-blue, 0-0), (' '-yellow, 0-1)]),
+     tile(2, 2, [(g-black, 0-0), (o-orange, 0-0) ,(b-blue, 0-0), (' '-yellow, 0-1)])]
+]).

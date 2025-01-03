@@ -1,12 +1,19 @@
 :- use_module(library(lists)).
 
-%----------------------MAKE A MOVE---------------------------------------------%
-% move_put_piece(+CurrentBoard, +Player-Piece, +Row-Col-Color, -NewFinalBoard)
-% Move a piece from the player's hand to the board
-move_put_piece(CurrentBoard, Player-Piece, Row-Col-Color, NewFinalBoard) :- 
+%----------------------MAKE A MOVE---------------------------------------------% 
+%-Move a piece inside the board
+move_piece(CurrentBoard, game_config(Width, Height), Player, Player-Piece, Row-Col-Color, NewFinalBoard) :- 
+    is_move_possible(CurrentBoard, game_config(Width, Height), Player, Player-Piece, Row-Col-Color),
     move_update_board(CurrentBoard, Player-Piece, 0-0, NewBoard),
     move_place_piece(NewBoard, Row-Col-Color, Player-Piece, NewFinalBoard),
     !.  
+
+%Move a piece from inside the board to the board
+move_put_piece(CurrentBoard, game_config(Width, Height), Player, Player-Piece, Row-Col-Color, NewFinalBoard) :-
+    is_move_possible_start(CurrentBoard, game_config(Width, Height), Player, Player-Piece, Row-Col-Color),
+    move_place_piece(Current_Player, Row-Col-Color, Player-Piece, NewFinalBoard),
+    !. 
+
 
 %----------------------TAKE PIECE OUT FROM ITS PLACE---------------------------%
 % move_update_board(+Board, +Player-Piece, +TargetValue, -UpdatedBoard)
@@ -71,12 +78,18 @@ replace_nth1([H|Rest], N, Elem, [H|UpdatedRest]) :-
 %///////////////////////////////////////////////////////////////////////////////////////////////////%
 %---------------------- CHECK POSSIBLE MOVE---------------------------------------------%
 %///////////////////////////////////////////////////////////////////////////////////////////////////%
+%check move inside the board
 is_move_possible(CurrentBoard, game_config(Width, Height), Current_Player, Current_Player-Piece, Row-Col-Color) :-
     within_bounds(game_config(Width, Height), Row-Col),
     empty_tile(CurrentBoard, Row-Col-Color),
     friendly_color(Current_Player, Row-Col-Color),
     is_close_tile(CurrentBoard, Current_Player-Piece, Row-Col-Color).
 
+is_move_possible_start(CurrentBoard, game_config(Width, Height), Current_Player, Current_Player-Piece, Row-Col-Color) :-
+    within_bounds(game_config(Width, Height), Row-Col),
+    empty_tile(CurrentBoard, Row-Col-Color),
+    friendly_color(Current_Player, Row-Col-Color),
+    is_close_tile_start(CurrentBoard, game_config(Width, Height), Current_Player-Piece, Row-Col-Color).
 
 %----------------------CHECK IF THE POSITION IS WITHIN BOUNDS---------------------------%
 within_bounds(game_config(Width, Height), Row-Col) :-
@@ -105,6 +118,7 @@ friendly_color(2, _-_-orange).
 
 %----------------------CHECK IF THE TILE IS CLOSE TO THE PLAYER'S PIECE---------------------------%
 %Checks if the tile is close to the player's piece(check the coordinates with find-player pice func)%
+%check move inside the board
 is_close_tile(CurrentBoard, Player-Piece, Row-Col-Color) :- 
     find_player_piece(CurrentBoard, Player-Piece, PlayerRow-PlayerCol, PlayerPosition),
     nth1(Row, CurrentBoard, TargetRow),
@@ -116,6 +130,17 @@ is_close_tile(CurrentBoard, Player-Piece, Row-Col-Color) :-
     Col >= PlayerCol - 1,
     Col =< PlayerCol + 1.
 
+is_close_tile_start(CurrentBoard,game_config(Width, Height), 1-Piece, 1-Col-Color) :-
+    nth1(Row, CurrentBoard, TargetRow),
+    nth1(Col, TargetRow, Tile),
+    find_next(Tile, Color, NextPosition),
+    start_friendly_tile(Player,NextPosition).
+
+is_close_tile_start(CurrentBoard,game_config(Width, Height), 2-Piece, Height-Col-Color) :-
+    nth1(Row, CurrentBoard, TargetRow),
+    nth1(Col, TargetRow, Tile),
+    find_next(Tile, Color, NextPosition),
+    start_friendly_tile(Player,NextPosition).
 
 
 %----------------------GET TOKEN's TILE----------------------------%
@@ -147,6 +172,12 @@ friendly_tile(2,1).
 friendly_tile(2,4).
 friendly_tile(3,1).
 friendly_tile(3,4).
+
+%Checks if the move to the board is one of the closest to the border%
+start_friendly_tile(1,3).
+start_friendly_tile(1,4).
+start_friendly_tile(2,1).
+start_friendly_tile(2,2).
 
 
 board([
