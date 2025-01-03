@@ -75,7 +75,7 @@ is_move_possible(CurrentBoard, game_config(Width, Height), Current_Player, Curre
     within_bounds(game_config(Width, Height), Row-Col),
     empty_tile(CurrentBoard, Row-Col-Color),
     friendly_color(Current_Player, Row-Col-Color),
-
+    is_close_tile(CurrentBoard, Current_Player-Piece, Row-Col-Color).
 
 
 %----------------------CHECK IF THE POSITION IS WITHIN BOUNDS---------------------------%
@@ -105,30 +105,53 @@ friendly_color(2, _-_-orange).
 
 %----------------------CHECK IF THE TILE IS CLOSE TO THE PLAYER'S PIECE---------------------------%
 %Checks if the tile is close to the player's piece(check the coordinates with find-player pice func)%
-is_close_tile(CurrentBoard, Player-Piece) :- 
+is_close_tile(CurrentBoard, Player-Piece, Row-Col-Color) :- 
+    find_player_piece(CurrentBoard, Player-Piece, PlayerRow-PlayerCol, PlayerPosition),
     nth1(Row, CurrentBoard, TargetRow),
-    is_close_tile_aux(TargetRow, Col, Color, Player-Piece).
+    nth1(Col, TargetRow, Tile),
+    find_next(Tile, Color, NextPosition),
+    friendly_tile(PlayerPosition, NextPosition),
+    Row >= PlayerRow - 1,
+    Row =< PlayerRow + 1,
+    Col >= PlayerCol - 1,
+    Col =< PlayerCol + 1.
+
 
 
 %----------------------GET TOKEN's TILE----------------------------%
-find_player_piece([], _, _) :- fail.
-find_player_piece([Row | Rest], Player_Piece, RowNum-ColNum) :- 
-    find_player_piece_aux(Row, Player_Piece, RowNum-ColNum);
-    find_player_piece(Rest, Player_Piece, RowNum-ColNum).
+find_player_piece([], _, _, _) :- fail.
+find_player_piece([Row | Rest], Player_Piece, RowNum-ColNum, Position) :- 
+    find_player_piece_aux(Row, Player_Piece, RowNum-ColNum, Position);
+    find_player_piece(Rest, Player_Piece, RowNum-ColNum, Position).
 
-find_player_piece_aux([], _, _) :- fail.
-find_player_piece_aux([tile(Row, Col, [(_, Player_Piece), _, _, _]) | _], Player_Piece, Row-Col).
-find_player_piece_aux([tile(Row, Col, [_, (_, Player_Piece), _, _]) | _], Player_Piece, Row-Col).
-find_player_piece_aux([tile(Row, Col, [_, _, (_, Player_Piece), _]) | _], Player_Piece, Row-Col).
-find_player_piece_aux([tile(Row, Col, [_, _, _, (_, Player_Piece)]) | _], Player_Piece, Row-Col).
-find_player_piece_aux([_ | Rest], Player_Piece, Row-Col) :- 
-    find_player_piece_aux(Rest, Player_Piece, Row-Col).
+find_player_piece_aux([], _, _, _) :- fail.
+find_player_piece_aux([tile(Row, Col, [(_, Player_Piece), _, _, _]) | _], Player_Piece, Row-Col, 1).
+find_player_piece_aux([tile(Row, Col, [_, (_, Player_Piece), _, _]) | _], Player_Piece, Row-Col, 2).
+find_player_piece_aux([tile(Row, Col, [_, _, (_, Player_Piece), _]) | _], Player_Piece, Row-Col, 3).
+find_player_piece_aux([tile(Row, Col, [_, _, _, (_, Player_Piece)]) | _], Player_Piece, Row-Col, 4).
+find_player_piece_aux([_ | Rest], Player_Piece, Row-Col, Position) :- 
+    find_player_piece_aux(Rest, Player_Piece, Row-Col, Position).
 
+find_next(tile(_, _, [(_-Color, _), _, _, _]), Color, 1).
+find_next(tile(_, _, [ _,(_-Color, _), _, _]), Color, 2).
+find_next(tile(_, _, [ _, _,(_-Color, _), _]), Color, 3).
+find_next(tile(_, _, [ _, _, _,(_-Color, _)]), Color, 4).
+
+%----------------------CHECK IF THE TILE PLACE IS FRIENDLY---------------------------%
+%Checks if the tile is a friendly place to put the piece(if it iss on the direct side of the piece)%
+friendly_tile(1,2).
+friendly_tile(1,3).
+friendly_tile(4,2).
+friendly_tile(4,3).
+friendly_tile(2,1).
+friendly_tile(2,4).
+friendly_tile(3,1).
+friendly_tile(3,4).
 
 
 board([
-    [tile(1, 1, [(o-orange, 0-0), (g-black, 0-0), (b-blue, 0-0), (' '-black, 0-1)]),
-     tile(1, 2, [(o-orange, 0-0), (g-black, 1-2), (b-blue, 0-0), (' '-black, 0-1)])],
-    [tile(2, 1, [(o-orange, 0-0), (g-black, 0-0), (b-blue, 0-0), (' '-black, 0-1)]),
-     tile(2, 2, [(o-orange, 0-0), (g-black, 0-0), (b-blue, 0-0), (' '-black, 0-1)])]
+    [tile(1, 1, [(g-black, 0-0), (o-orange, 0-0), (b-blue, 0-0), (' '-yellow, 0-1)]),
+     tile(1, 2, [(g-black, 1-2),(o-orange, 0-0), (b-blue, 0-0), (' '-yellow, 0-1)])],
+    [tile(2, 1, [(g-black, 0-0),(o-orange, 0-0), (b-blue, 0-0), (' '-yellow, 0-1)]),
+     tile(2, 2, [(g-black, 0-0), (o-orange, 0-0) ,(b-blue, 0-0), (' '-yellow, 0-1)])]
 ]).
