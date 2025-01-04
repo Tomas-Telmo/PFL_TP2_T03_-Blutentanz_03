@@ -89,21 +89,21 @@ game_loop(GameState):-
     show_winner(Winner), !. 
 
 
-game_loop( game_state(Round, player1Info(Player1_Type,Player1_PiecesUnplaced, PLayer1_PiecesDelivered), player2Info(Player2_Type,Player2_PiecesUnplaced, PLayer2_PiecesDelivered),PiecesNecessaryToWin, CurrentPlayer, BoardInfo )):-
+game_loop( game_state(Turn, player1Info(Player1_Type,Player1_PiecesUnplaced, PLayer1_PiecesDelivered), player2Info(Player2_Type,Player2_PiecesUnplaced, PLayer2_PiecesDelivered),PiecesNecessaryToWin, CurrentPlayer, BoardInfo )):-
     %display_game(+GameState), displays the current game state
-    display_game(game_state(Round, player1Info(Player1_Type,Player1_PiecesUnplaced, PLayer1_PiecesDelivered), player2Info(Player2_Type,Player2_PiecesUnplaced, PLayer2_PiecesDelivered),PiecesNecessaryToWin, CurrentPlayer, BoardInfo )),
+    display_game(game_state(Turn, player1Info(Player1_Type,Player1_PiecesUnplaced, PLayer1_PiecesDelivered), player2Info(Player2_Type,Player2_PiecesUnplaced, PLayer2_PiecesDelivered),PiecesNecessaryToWin, CurrentPlayer, BoardInfo )),
     
     
-    choose_rotate_type(CurrentPlayer,BoardInfo,BoardInfo_AfterRotate), %WIP
+    choose_rotate_type(BoardInfo,BoardInfo_AfterRotate), %WIP
 
     %choose_move(CurrentPlayer,BoardInfo_AfterRotate, 3),%WIP
     % piece(CurrentPlayer, Piece), put_piece(CurrentBoard, X-Y, Piece, NewBoard), TODO
    
     switch_player(CurrentPlayer, NewPlayer),
     
-    NewRound is Round + 1,
+    NewTurn is Turn + 1,
 
-    game_loop(game_state(NewRound, player1Info(Player1_Type,Player1_PiecesUnplaced, 0), player2Info(Player2_Type,Player2_PiecesUnplaced, 0),PiecesNecessaryToWin, NewPlayer, BoardInfo_AfterRotate )).
+    game_loop(game_state(NewTurn, player1Info(Player1_Type,Player1_PiecesUnplaced, 0), player2Info(Player2_Type,Player2_PiecesUnplaced, 0),PiecesNecessaryToWin, NewPlayer, BoardInfo_AfterRotate )).
 
 %---------------------------------------GAME_OVER---------------------------------------------------%
 
@@ -120,12 +120,13 @@ show_winner(Winner):-
 
 %-------------------------------------------DISPLAY_GAME-----------------------------------------------%
 % CASE- PLAYER 1 turn
-display_game(game_state(Round, player1Info(_,Player1_PiecesUnplaced, PLayer1_PiecesDelivered), _, _, 1, boardInfo(Width,Height,Board) )):-
-
-    write('======================================='), nl,
-    format('|               ROUND ~w               |', [Round]),nl,
-    write('======================================='), nl,
-    write('--------> Player1:                      '), nl,
+display_game(game_state(Turn, player1Info(_,Player1_PiecesUnplaced, PLayer1_PiecesDelivered), _, _, 1, boardInfo(Width,Height,Board) )):-
+    write('=============='), nl,
+   format(' -> Turn ~w  ', [Turn]),nl,
+    write('=============='), nl,
+    write('========================================='), nl,
+    write('|             PLAYER 1 (BLUE)           |'),nl,
+    write('========================================='), nl,nl,
 
     format('Pieces in reserve: ~w', [Player1_PiecesUnplaced]),nl,
     format('Pieces delivered: ~w', [PLayer1_PiecesDelivered]),nl,nl,
@@ -133,13 +134,14 @@ display_game(game_state(Round, player1Info(_,Player1_PiecesUnplaced, PLayer1_Pie
     display_current_board(Width,Height,Board),nl,nl,nl.
 
 % CASE- PLAYER 2 turn
-display_game(game_state(Round, _, player2Info(_, Player2_PiecesUnplaced, PLayer2_PiecesDelivered),_, 2, boardInfo(Width,Height,Board))):-
+display_game(game_state(Turn, _, player2Info(_, Player2_PiecesUnplaced, PLayer2_PiecesDelivered),_, 2, boardInfo(Width,Height,Board))):-
 
-    write('======================================='), nl,
-   format('|               ROUND ~w               |', [Round]),nl,
-    write('======================================='), nl,
-
-     write('--------> Player2 :'), nl,nl,nl,
+    write('=============='), nl,
+   format(' -> Turn ~w  ', [Turn]),nl,
+    write('=============='), nl,
+    write('========================================='), nl,
+    write('|             PLAYER 2 (ORANGE)         |'),nl,
+    write('========================================='), nl,nl,
 
     format('Pieces in reserve: ~w', [Player2_PiecesUnplaced]),nl,
     format('Pieces delivered: ~w', [PLayer2_PiecesDelivered]),nl,nl,
@@ -153,8 +155,8 @@ switch_player(2, 1).
 
 %-------------------------------------------CHOOSE_ROTATE_TYPE-----------------------------------------------%
 
-choose_rotate_type(CurrentPlayer, BoardInfo, BoardInfo_AfterRotate):-
-    format('Player ~w, choose a rotation type: ', [CurrentPlayer]),nl,
+choose_rotate_type(BoardInfo, BoardInfo_AfterRotate):-
+    write('Choose a rotation type: '),nl,
     write('======================================='), nl,
     write('|       1. Rotate a row               |'), nl,
     write('|       2. Rotate a column            |'),nl,

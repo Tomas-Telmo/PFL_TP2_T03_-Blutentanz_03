@@ -22,11 +22,16 @@ generate_initial_board(Width, Height, RandomizedBoard) :-
 
 % Display the board
 display_current_board(Width, Height, Board) :-
+    
+    draw_base(Width, 'ORANGE'),nl,
     display_board_rows(Height, Board),
+
     draw_padding(0),
     draw_bottom_borders(Width), nl,
+    
     draw_padding(0),
-    draw_X_coordinates(Width,0).
+    draw_X_coordinates(Width,0),nl,
+    draw_base(Width, 'BLUE'),nl,nl.
 
 display_board_rows(_,[]) :- !.
 display_board_rows(Collumn_Counter,[Row | Rest]) :-
@@ -64,6 +69,22 @@ draw_padding(0) :- write('      ').
 draw_padding(1) :- write('    ').
 
 draw_padding(2) :- write(' ').
+
+
+
+%------------------DRAW PLAYER BASES------------------%
+draw_base(Width, Color) :-
+    write('       '),
+    Half_Width is Width // 2,
+    draw_base_aux(Half_Width),
+    format('        ~w BASE      ', [Color]),
+    draw_base_aux(Half_Width).
+
+draw_base_aux(1).
+draw_base_aux(Half_Width) :-
+    write('/////////////'),
+    NEW_Width is Half_Width - 1,
+    draw_base_aux(NEW_Width).
 
 %------------------DRAW COORDINATES------------------%
 draw_Y_coordinates(Counter):-
