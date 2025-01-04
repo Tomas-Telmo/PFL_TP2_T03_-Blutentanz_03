@@ -8,7 +8,7 @@ move_piece(CurrentBoard, game_config(Width, Height), Player, Player-Piece, Row-C
     move_place_piece(NewBoard, Row-Col-Color, Player-Piece, NewFinalBoard),
     !.  
 
-%Move a piece from inside the board to the board
+%Move a piece from outside the board to the board
 move_put_piece(CurrentBoard, game_config(Width, Height), Player, Player-Piece, Row-Col-Color, NewFinalBoard) :-
     is_move_possible_start(CurrentBoard, game_config(Width, Height), Player, Player-Piece, Row-Col-Color),
     move_place_piece(CurrentBoard, Row-Col-Color, Player-Piece, NewFinalBoard),
