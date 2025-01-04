@@ -171,6 +171,5 @@ draw_top_borders([_ | Rest]) :-
 % Display the token (player-pieceNumber)
 display_token(0-0) :- write('---').
 display_token(0-1) :- write('   ').
-display_token(1-T) :- write(' '), display_color(T-blue), write(' ').
-display_token(2-T) :- write(' '), display_color(T-orange), write(' ').
-
+display_token(1-T) :- display_color('['-blue),display_color(T-blue),display_color(']'-blue).
+display_token(2-T) :- display_color('<'-orange),display_color(T-orange),display_color('>'-orange).

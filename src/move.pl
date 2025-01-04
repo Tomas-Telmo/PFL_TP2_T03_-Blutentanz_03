@@ -1,3 +1,5 @@
+% 1 - azuis - row =1
+% 2 - laranja - row = height
 :- use_module(library(lists)).
 
 %----------------------MAKE A MOVE---------------------------------------------% 
@@ -5,14 +7,14 @@
 move_piece(CurrentBoard, game_config(Width, Height), Player, Player-Piece, Row-Col-Color, NewFinalBoard) :- 
     is_move_possible(CurrentBoard, game_config(Width, Height), Player, Player-Piece, Row-Col-Color),
     move_update_board(CurrentBoard, Player-Piece, 0-0, NewBoard),
-    move_place_piece(NewBoard, Row-Col-Color, Player-Piece, NewFinalBoard),
-    !.  
+    move_place_piece(NewBoard, Row-Col-Color, Player-Piece, NewFinalBoard).
 
 %Move a piece from inside the board to the board
-put_piece(CurrentBoard, game_config(Width, Height), Player, Player-Piece, Row-Col-Color, NewFinalBoard) :-
+move_piece(CurrentBoard, game_config(Width, Height), Player, Player-Piece, Row-Col-Color, NewFinalBoard) :-
     is_move_possible_start(CurrentBoard, game_config(Width, Height), Player, Player-Piece, Row-Col-Color),
-    move_place_piece(CurrentBoard, Row-Col-Color, Player-Piece, NewFinalBoard),
-    !. 
+    move_place_piece(CurrentBoard, Row-Col-Color, Player-Piece, NewFinalBoard). 
+
+move_piece(_, _, _, _, _, _) :- fail.
 
 
 %----------------------TAKE PIECE OUT FROM ITS PLACE---------------------------%
@@ -174,15 +176,18 @@ friendly_tile(3,1).
 friendly_tile(3,4).
 
 %Checks if the move to the board is one of the closest to the border%
-start_friendly_tile(1,3).
-start_friendly_tile(1,4).
-start_friendly_tile(2,1).
-start_friendly_tile(2,2).
+start_friendly_tile(2,3).
+start_friendly_tile(2,4).
+start_friendly_tile(1,1).
+start_friendly_tile(1,2).
+
 
 
 board([
     [tile(1, 1, [(g-black, 0-0), (o-orange, 0-0), (b-blue, 0-0), (' '-yellow, 0-1)]),
      tile(1, 2, [(g-black, 1-2),(o-orange, 0-0), (b-blue, 0-0), (' '-yellow, 0-1)])],
     [tile(2, 1, [(g-black, 0-0),(o-orange, 0-0), (b-blue, 0-0), (' '-yellow, 0-1)]),
-     tile(2, 2, [(g-black, 0-0), (o-orange, 0-0) ,(b-blue, 0-0), (' '-yellow, 0-1)])]
+     tile(2, 2, [(g-black, 0-0), (o-orange, 0-0) ,(b-blue, 0-0), (' '-yellow, 0-1)])],
+     [tile(3, 1, [(g-black, 0-0),(o-orange, 0-0), (b-blue, 0-0), (' '-yellow, 0-1)]),
+     tile(3, 2, [(g-black, 0-0), (o-orange, 0-0) ,(b-blue, 0-0), (' '-yellow, 0-1)])]
 ]).
