@@ -4,12 +4,26 @@
 :- consult(move).
 
 
+valid_moves(game_state(_, player1Info(_,[Current_Piece | Rest], _), _, _, _, 1, boardInfo(Width,Height,Board)), AllPossibleMoves) :-
+    process_all_pieces_moves([Current_Piece | Rest], Board, game_config(Width, Height), 1,AllPossibleMoves).
+
+
+valid_moves(game_state(_, _, player2Info(_,[Current_Piece | Rest], _), _, _, 2, boardInfo(Width,Height,Board)), AllPossibleMoves) :-
+    process_all_pieces_moves([Current_Piece | Rest], Board, game_config(Width, Height), 2,AllPossibleMoves).
+
+
+process_all_pieces_moves([], _, _, _, []).
+process_all_pieces_moves([Piece | Rest], Board, GameConfig, Player ,AllPossibleMoves) :-
+    process_move_on_board_bot_tiles(Board, GameConfig, Player-Piece, Moves),
+    process_all_pieces_moves(Rest, Board, GameConfig, Player ,RestMoves),
+    append(Moves, RestMoves, AllPossibleMoves).
+
 
 
 
 %----------------------GET TOKES TILE AND PLACE----------------------------%
 %get_tokens_tile_and_place(+Board, +Player-Piece, -Row-Col, -Position)
-find_bot_piece([], _, _, not_on_board) :- !.
+find_bot_piece([], _, _, 100) :- !.
 find_bot_piece([Row | Rest], Player_Piece, RowNum-ColNum, Position) :- 
     find_bot_piece_aux(Row, Player_Piece, RowNum-ColNum, Position), !;
     find_bot_piece(Rest, Player_Piece, RowNum-ColNum, Position).
@@ -25,14 +39,27 @@ find_bot_piece_aux([_ | Rest], Player_Piece, Row-Col, Position) :-
 
 
 
+
+
+
+
 %----------------------GET POSSIBLE MOVES----------------------------%
+%process_move_off_board_bot_tiles(+Board, +game_config, +Player-Piece, -FinalMoves)
+%gets the possible moves for pieces that are not inside the board yet
+process_move_on_board_bot_tiles(Board, game_config(Width, Height), Player-Piece, Moves) :-
+    process_move_off_board(Board, game_config(Width, Height), Player-Piece, Moves),
+    !.
+
 %process_move_on_board_bot_tiles(+Board, +game_config, +Player-Piece, -FinalMoves)
+%gets the possible moves for pieces that are already inside the board
 process_move_on_board_bot_tiles(Board, game_config(Width, Height), Player-Piece, FinalFinalMoves) :-
     get_close_tiles(Board, game_config(Width, Height), Player-Piece, CloseTiles),
     process_move_on_board(Board, CloseTiles, Player-Piece, FinalMoves),
     process_final_move_on_board(Board, game_config(Width, Height), Player-Piece, FinalMove),
     append(FinalMoves, FinalMove, FinalFinalMoves) , !.
+
 %--------------------------------------------------------------------%
+
 
 
 %----------------------FIND POSSIBLE MOVES FOR PIECE ALREADY ON BOARD----------------------------%
@@ -88,12 +115,12 @@ process_final_move_on_board(_, _, _, []).
 %----------------------FIND POSSIBLE MOVES FOR PIECE THAT IS NOT YET ON THE BOARD----------------------------%
 %find_possible_moves_for_piece(+Board, +Player-Piece, +Row-Col, +Position, -Moves)
 process_move_off_board(Board, _, 1-Piece, Moves) :-
-    find_bot_piece(Board, 1-Piece, _,not_on_board),
+    find_bot_piece(Board, 1-Piece, _,100),
     nth1(1, Board, TargetRow),
     process_move_off_board_aux(TargetRow, 1-Piece, Moves).
 
 process_move_off_board(Board, game_config(Width, _), 2-Piece, Moves) :-
-    find_bot_piece(Board, 2-Piece, _,not_on_board),
+    find_bot_piece(Board, 2-Piece, _,100),
     nth1(Width, Board, TargetRow),
     process_move_off_board_aux(TargetRow, 2-Piece, Moves).
 
@@ -191,9 +218,10 @@ bot_adapted_friendly_tile(Row-Col-4, Row-OtherCol-3) :-
 
 board([
     [tile(1, 1, [(g-gray, 0-0), (o-orange, 2-1), (b-blue, 0-0), (' '-yellow, 0-1)]),
-     tile(1, 2, [(g-gray, 1-2),(o-orange, 0-0), (b-blue, 0-0), (' '-yellow, 0-1)])],
+     tile(1, 2, [(g-gray, 0-0),(o-orange, 0-0), (b-blue, 0-0), (' '-yellow, 0-1)])],
     [tile(2, 1, [(g-gray, 0-0),(o-orange, 0-0), (b-blue, 0-0), (' '-yellow, 0-1)]),
      tile(2, 2, [(g-gray, 0-0), (o-orange, 0-0) ,(b-blue, 0-0), (' '-yellow, 0-1)])],
      [tile(3, 1, [(g-gray, 0-0),(o-orange, 0-0), (b-blue, 0-0), (' '-yellow, 0-1)]),
-     tile(3, 2, [(g-gray, 1-3),(b-blue, 0-0),(o-orange, 0-0), (' '-yellow, 0-1)])]
+     tile(3, 2, [(g-gray, 0-0), (o-orange, 0-0) ,(b-blue, 1-3), (' '-yellow, 0-1)])]
 ]).
+

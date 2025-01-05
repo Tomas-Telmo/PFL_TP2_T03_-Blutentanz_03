@@ -116,7 +116,7 @@ is_move_possible_start(CurrentBoard, game_config(Width, Height), Current_Player,
 
 %----------------------CHECK IF THE POSITION IS WITHIN BOUNDS---------------------------%
 within_bounds(game_config(Width, Height), Row-Col) :-
-    Row > 0,
+    Row > 0,    
     Col > 0,
     Row =< Width,
     Col =< Height.
