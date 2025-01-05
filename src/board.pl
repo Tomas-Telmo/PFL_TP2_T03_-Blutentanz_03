@@ -11,7 +11,7 @@ generate_initial_board(Width, Height, RandomizedBoard) :-
     findall(
         RowTiles,
         (between(1, Height, Row),
-         findall(tile(Row, Col, [(g-black, 0-0), (o-orange, 0-0), ( b-blue, 0-0), ( ' '-yellow, 0-1)]),
+         findall(tile(Row, Col, [(g-gray, 0-0), (o-orange, 0-0), ( b-blue, 0-0), ( ' '-yellow, 0-1)]),
                  between(1, Width, Col),
                  RowTiles)),
         DefaultBoard),

@@ -2,7 +2,7 @@
 :- use_module(library(random)).
 
 
-% read_number(-X)
+% ------------------------------read_number(-X)-----------------------------%
 % Reads the first digits of a number. Throws the rest of the input away.
 read_number(X):-
     read_number_aux(0,false,X).
@@ -19,21 +19,20 @@ read_number_aux(Acc,_,X):-
     
 read_number_aux(X,true,X).
 
-% ?- repeat, read_number(X), clear_buffer, write(X), nl, fail.
 
-% clear_buffer.
+% ------------------------------clear_buffer------------------------%
 % Clears the input buffer.
 clear_buffer:-
     repeat,
     get_char(C),
     C = '\n',
-    !. % to avoid the true = ? on Sicstus 4.8.0+, works without the ! on older versions
+    !. 
 
 
-
+% ------------------------------COLOR RELATED------------------------%
 
 % Map color names to ANSI escape sequences as strings
-color_code(black, "\e[30m"). 
+color_code(gray, "\e[30m"). 
 color_code(orange, "\e[38;2;255;165;0m").  
 color_code(white, "\e[37m").  
 color_code(red, "\e[31m").       

@@ -132,7 +132,7 @@ empty_tile_aux(Row, Col, Color) :- nth1(Col, Row, tile(_, _, [ _, _, _,( _-Color
 %----------------------CHECK IF THE COLOR IS FRIENDLY---------------------------%
 %Checks if the color of the tile is the same as the player's color or neutral%
 friendly_color(1, _-_-blue).
-friendly_color(_, _-_-black).
+friendly_color(_, _-_-gray).
 friendly_color(2, _-_-orange).
 
 
@@ -224,10 +224,10 @@ final_line(game_config(Width, _), Width-_-3).
 
 
 board([
-    [tile(1, 1, [(g-black, 0-0), (o-orange, 2-1), (b-blue, 0-0), (' '-yellow, 0-1)]),
-     tile(1, 2, [(g-black, 1-2),(o-orange, 0-0), (b-blue, 0-0), (' '-yellow, 0-1)])],
-    [tile(2, 1, [(g-black, 0-0),(o-orange, 0-0), (b-blue, 0-0), (' '-yellow, 0-1)]),
-     tile(2, 2, [(g-black, 0-0), (o-orange, 0-0) ,(b-blue, 0-0), (' '-yellow, 0-1)])],
-     [tile(3, 1, [(g-black, 0-0),(o-orange, 0-0), (b-blue, 0-0), (' '-yellow, 0-1)]),
-     tile(3, 2, [(g-black, 0-0), (o-orange, 0-0) ,(b-blue, 1-3), (' '-yellow, 0-1)])]
+    [tile(1, 1, [(g-gray, 0-0), (o-orange, 2-1), (b-blue, 0-0), (' '-yellow, 0-1)]),
+     tile(1, 2, [(g-gray, 1-2),(o-orange, 0-0), (b-blue, 0-0), (' '-yellow, 0-1)])],
+    [tile(2, 1, [(g-gray, 0-0),(o-orange, 0-0), (b-blue, 0-0), (' '-yellow, 0-1)]),
+     tile(2, 2, [(g-gray, 0-0), (o-orange, 0-0) ,(b-blue, 0-0), (' '-yellow, 0-1)])],
+     [tile(3, 1, [(g-gray, 0-0),(o-orange, 0-0), (b-blue, 0-0), (' '-yellow, 0-1)]),
+     tile(3, 2, [(g-gray, 0-0), (o-orange, 0-0) ,(b-blue, 1-3), (' '-yellow, 0-1)])]
 ]).

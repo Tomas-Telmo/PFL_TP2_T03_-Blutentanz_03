@@ -291,7 +291,7 @@ enter_move(piece(Current_Player, PieceNbr), move(piece(Current_Player, PieceNbr)
     write('Enter Collumn number: '),
     read_number(Collumn),clear_buffer,nl,
 
-    write('Enter color {orange, blue, black}: '),
+    write('Enter color {orange, blue, gray}: '),
     read(Color),clear_buffer,
 
     write('======================================='), nl,nl,nl.
