@@ -19,7 +19,7 @@ move_piece(CurrentBoard, game_config(Width, Height), Player, Player-Piece, Row-C
      is_move_possible(CurrentBoard, game_config(Width, Height), Player, Player-Piece, Row-Col-Color),
      move_update_board(CurrentBoard, Player-Piece, 0-0, NewFinalBoard), 
      remove_available_piece(Pieces_Available, Piece, NewPieces_Available),
-    NewPieces_Delivered is Pieces_Delivered + 1, 
+     NewPieces_Delivered is Pieces_Delivered + 1, 
      !.
 
 move_piece(_, _, _, _, _, _, _, _, _, _) :- fail.

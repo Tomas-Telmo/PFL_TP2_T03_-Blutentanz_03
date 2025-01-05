@@ -108,7 +108,7 @@ game_loop( game_state(Turn, player1Info(Player1_Type,Player1_Pieces_Available, P
     %PLAYER MOVES------
     choose_rotate_type(BoardInfo, BoardInfo_AfterRotate), 
     
-    %player_move(MovesLeft,Game_State)
+    %player_move(MovesLeft,Game_State,NEW_Game_State)
     player_move(3,
         game_state(Turn, player1Info(Player1_Type,Player1_Pieces_Available, PLayer1_PiecesDelivered), player2Info(Player2_Type, Player2_Pieces_Available, PLayer2_PiecesDelivered),PiecesPerPlayer,PiecesNecessaryToWin, CurrentPlayer, BoardInfo_AfterRotate ),
         game_state(Turn, player1Info(Player1_Type, NewPlayer1_Pieces_Available, NewPLayer1_PiecesDelivered), player2Info(Player2_Type,NewPlayer2_Pieces_Available, NewPLayer2_PiecesDelivered),PiecesPerPlayer,PiecesNecessaryToWin, CurrentPlayer, UpdatedBoardInfo )), 
@@ -118,8 +118,7 @@ game_loop( game_state(Turn, player1Info(Player1_Type,Player1_Pieces_Available, P
 
     %choose_move(+GameState, +Level, -Move). -> for bot
     % piece(CurrentPlayer, Piece), put_piece(CurrentBoard, X-Y, Piece, NewBoard), TODO
-   
-    
+
     switch_player(CurrentPlayer, NewPlayer),
     
     NewTurn is Turn + 1,
@@ -127,11 +126,13 @@ game_loop( game_state(Turn, player1Info(Player1_Type,Player1_Pieces_Available, P
     game_loop(game_state(NewTurn, player1Info(Player1_Type, NewPlayer1_Pieces_Available, NewPLayer1_PiecesDelivered), player2Info(Player2_Type,NewPlayer2_Pieces_Available, NewPLayer2_PiecesDelivered),PiecesPerPlayer,PiecesNecessaryToWin, NewPlayer, UpdatedBoardInfo )).
 
 %---------------------------------------GAME_OVER---------------------------------------------------%
-game_over(game_state(_, player1Info(_, _, PiecesDelivered1), _, _, PiecesNecessaryToWin, _, _), 1) :-
-    PiecesDelivered1 >= PiecesNecessaryToWin, !.
+game_over(game_state(_, player1Info(_, _, PiecesDelivered), _, _, PiecesNecessaryToWin, _, _), 1) :-
+   
+    PiecesDelivered >= PiecesNecessaryToWin.
 
-game_over(game_state(_, _, player2Info(_, _, PiecesDelivered2), _, PiecesNecessaryToWin, _, _), 2) :-
-    PiecesDelivered2 >= PiecesNecessaryToWin, !.
+game_over(game_state(_, _, player2Info(_, _, PiecesDelivered), _, PiecesNecessaryToWin, _, _), 2) :-
+    
+    PiecesDelivered >= PiecesNecessaryToWin.
 
 %---------------------------------------SHOW_WINNER---------------------------------------------------%
 show_winner(Winner):-
@@ -225,7 +226,7 @@ rotate_row_or_column(2,boardInfo(Width, Height, Board), boardInfo(Width, Height,
 
 %player1 wins
 player_move(_, game_state(_, player1Info(_,_, PiecesDelivered), _, _, PiecesNecessaryToWin, _, _ ), game_state(_, player1Info(_,_, PiecesDelivered), _, _, PiecesNecessaryToWin, _, _ )) :- 
-    PiecesDelivered >= PiecesNecessaryToWin, !.
+   PiecesDelivered >= PiecesNecessaryToWin, !.
 
 %player2 wins
 player_move(_, game_state(_, _, player2Info(_,_, PiecesDelivered), _, _, PiecesNecessaryToWin, _, _ ), game_state(_, _, player2Info(_,_, PiecesDelivered), _, _, PiecesNecessaryToWin, _, _ )) :- 
@@ -258,7 +259,7 @@ choose_piece(game_state(_, player1Info(_,Player1_Pieces_Available, _),_,_,_, 1, 
     write('[PLAYER 1]'),nl,
     write('======================================='), nl,
     write('|     == == Available pieces == ==    |'), nl,
-    write('           [PIECE_NUMBER]             '), nl,
+    write('======================================='), nl,
 
     display_available_pieces(Player1_Pieces_Available),nl,
     
@@ -271,10 +272,10 @@ choose_piece(game_state(_, player1Info(_,Player1_Pieces_Available, _),_,_,_, 1, 
 choose_piece(game_state(_, _, player2Info(_,Player2_Pieces_Available, _),_,_, 2, _ ), piece(2, PieceNbr)):-
     length(Player2_Pieces_Available,PiecesAvailable),
 
-    rite('[PLAYER 2]'),nl,
+    write('[PLAYER 2]'),nl,
     write('======================================='), nl,
     write('|     == == Available pieces == ==    |'), nl,
-    write('             [PIECE_NUMBER]            '), nl,
+    write('======================================='), nl,
 
     display_available_pieces(Player2_Pieces_Available),nl,
     
@@ -286,15 +287,9 @@ choose_piece(game_state(_, _, player2Info(_,Player2_Pieces_Available, _),_,_, 2,
 
 display_available_pieces([]) :- !.
 display_available_pieces([Head | Tail]) :-
-    write(Head), nl,
+    format('      > Piece ~w       ', [Head]), nl,
     display_available_pieces(Tail).
 
-
-display_available_pieces(PiecesAvailable,CurrentPiece):-
-
-        format('      ~w. Piece ~w       ', [CurrentPiece, CurrentPiece]), nl,
-        NextPiece is CurrentPiece + 1,
-        display_available_pieces(PiecesAvailable,NextPiece).
 
 
 %-------------------------------------------ENTER_MOVE-----------------------------------------------%
@@ -304,14 +299,15 @@ enter_move(piece(Current_Player, PieceNbr), move(piece(Current_Player, PieceNbr)
 
     write('======================================='), nl,
     write('|==   ==   Select target tile   ==   ==|'), nl,
-    
+     write('======================================='), nl,
     %write('Enter row number (1-~w): ', [Height]),nl,
+    
     write('Enter row number: '),
-    read_number(Row),clear_buffer,nl,
+    read_number(Row),clear_buffer,
 
     %write('Enter collumn number (1-~w): ', [Width]),nl,
-    write('Enter Collumn number: '),
-    read_number(Collumn),clear_buffer,nl,
+    write('Enter collumn number: '),
+    read_number(Collumn),clear_buffer,
 
     write('Enter color {orange, blue, gray}: '),
     read(Color),clear_buffer,
@@ -322,24 +318,28 @@ enter_move(piece(Current_Player, PieceNbr), move(piece(Current_Player, PieceNbr)
 %------------------------------------------- MOVE -----------------------------------------------%
 
 %PLAYER 1
-  move(game_state(Turn, player1Info(Player1_Type, P1_Available, P1_Pieces_Delivered),_, PiecesPerPlayer, PiecesNecessaryToWin, 1, boardInfo(Width, Height, CurrentBoard) ), 
+  move(
+    game_state(Turn, player1Info(Player1_Type, P1_Available, P1_Pieces_Delivered),player2Info(Player2_Type,P2_Available, P2_Delivered), PiecesPerPlayer, PiecesNecessaryToWin, 1, boardInfo(Width, Height, CurrentBoard) ), 
     move(piece(Player, Piece), dest(Row, Col, Color)),
-    game_state(Turn, player1Info(Player1_Type, NewPiecesAvailable, NewPiecesDelivered),_, PiecesPerPlayer, PiecesNecessaryToWin, 1, boardInfo(Width, Height, NewBoard) )):-
+    game_state(Turn, player1Info(Player1_Type, New_P1PiecesAvailable, New_P1PiecesDelivered),player2Info(Player2_Type,P2_Available, P2_Delivered), PiecesPerPlayer, PiecesNecessaryToWin, 1, boardInfo(Width, Height, NewBoard) )):-
     
     translate_row_input(Row, Height, RealRow), %to fix coordintate backend discrepancies
   
-    move_piece(CurrentBoard, game_config(Width, Height), Player, Player-Piece, RealRow-Col-Color,P1_Available,P1_Pieces_Delivered, NewBoard, NewPiecesAvailable, NewPiecesDelivered),
+    move_piece(CurrentBoard, game_config(Width, Height), Player, Player-Piece, RealRow-Col-Color,P1_Available,P1_Pieces_Delivered, NewBoard, New_P1PiecesAvailable, New_P1PiecesDelivered),
 
     display_current_board(Width,Height,NewBoard), !.
 
 
 %PLAYER 2
-move(game_state(Turn,_, player2Info(Player2_Type,P2_Available, P2_Delivered), PiecesPerPlayer, PiecesNecessaryToWin, 2, boardInfo(Width, Height, CurrentBoard) ), 
+move(
+    game_state(Turn,player1Info(Player1_Type, P1_Available, P1_Pieces_Delivered), player2Info(Player2_Type,P2_Available, P2_Delivered), PiecesPerPlayer, PiecesNecessaryToWin, 2, boardInfo(Width, Height, CurrentBoard) ), 
     move(piece(Player, Piece), dest(Row, Col, Color)), 
-    game_state(Turn,_, player2Info(Player2_Type, NewPiecesAvailable, NewPiecesDelivered), PiecesPerPlayer, PiecesNecessaryToWin, 2, boardInfo(Width, Height, NewBoard) )):-
+    game_state(Turn,player1Info(Player1_Type, P1_Available, P1_Pieces_Delivered), player2Info(Player2_Type, New_P2PiecesAvailable, New_P2PiecesDelivered), PiecesPerPlayer, PiecesNecessaryToWin, 2, boardInfo(Width, Height, NewBoard) )):-
 
     translate_row_input(Row, Height, RealRow), %to fix coordintate backend discrepancies
   
-    move_piece(CurrentBoard, game_config(Width, Height), Player, Player-Piece, RealRow-Col-Color,P2_Available,P2_Delivered, NewBoard, NewPiecesAvailable,NewPiecesDelivered),
+    move_piece(CurrentBoard, game_config(Width, Height), Player, Player-Piece, RealRow-Col-Color,P2_Available,P2_Delivered, NewBoard, New_P2PiecesAvailable,New_P2PiecesDelivered),
+
+  
 
     display_current_board(Width,Height,NewBoard), !.

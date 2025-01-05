@@ -114,5 +114,5 @@ translate_row_input(Row, Height, Final) :-
 
 %-----------------REMOVE PIECE FROM AVAILABLE PIECES--------------------------------------%
 % Remove a piece from the list of available pieces
-remove_available_piece(Piece, Pieces_Available, Updated_Pieces_Available) :-
+remove_available_piece(Pieces_Available, Piece, Updated_Pieces_Available) :-
     select(Piece, Pieces_Available, Updated_Pieces_Available).
