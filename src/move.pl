@@ -7,14 +7,21 @@
 move_piece(CurrentBoard, game_config(Width, Height), Player, Player-Piece, Row-Col-Color, NewFinalBoard) :- 
     is_move_possible(CurrentBoard, game_config(Width, Height), Player, Player-Piece, Row-Col-Color),
     move_update_board(CurrentBoard, Player-Piece, 0-0, NewBoard),
-    move_place_piece(NewBoard, Row-Col-Color, Player-Piece, NewFinalBoard).
+    move_place_piece(NewBoard, Row-Col-Color, Player-Piece, NewFinalBoard) , !.
 
 %Move a piece from inside the board to the board
 move_piece(CurrentBoard, game_config(Width, Height), Player, Player-Piece, Row-Col-Color, NewFinalBoard) :-
     is_move_possible_start(CurrentBoard, game_config(Width, Height), Player, Player-Piece, Row-Col-Color),
-    move_place_piece(CurrentBoard, Row-Col-Color, Player-Piece, NewFinalBoard). 
+    move_place_piece(CurrentBoard, Row-Col-Color, Player-Piece, NewFinalBoard), !.
+
+%Move out a piece from the board (FINISHED)
+move_piece(CurrentBoard, game_config(Width, Height), Player, Player-Piece, Row-Col-Color, NewFinalBoard) :-
+     is_move_possible(CurrentBoard, game_config(Width, Height), Player, Player-Piece, Row-Col-Color),
+     move_update_board(CurrentBoard, Player-Piece, 0-0, NewFinalBoard), !.
 
 move_piece(_, _, _, _, _, _) :- fail.
+%-----------------------------------------------------------------------------------------------------%
+
 
 
 %----------------------TAKE PIECE OUT FROM ITS PLACE---------------------------%
@@ -80,6 +87,8 @@ replace_nth1([H|Rest], N, Elem, [H|UpdatedRest]) :-
 %///////////////////////////////////////////////////////////////////////////////////////////////////%
 %---------------------- CHECK POSSIBLE MOVE---------------------------------------------%
 %///////////////////////////////////////////////////////////////////////////////////////////////////%
+
+%----------------------CHECK IF THE MOVE IS POSSIBLE---------------------------%
 %check move inside the board
 is_move_possible(CurrentBoard, game_config(Width, Height), Current_Player, Current_Player-Piece, Row-Col-Color) :-
     within_bounds(game_config(Width, Height), Row-Col),
@@ -87,11 +96,20 @@ is_move_possible(CurrentBoard, game_config(Width, Height), Current_Player, Curre
     friendly_color(Current_Player, Row-Col-Color),
     is_close_tile(CurrentBoard, Current_Player-Piece, Row-Col-Color).
 
+%check move to see if the piece is in the final line and can go on
+is_move_possible(CurrentBoard, game_config(Width, Height), Player, Player-Piece, Row-Col-_) :-
+    is_finish_line(game_config(Width, Height),Row-Col-_),
+    find_player_piece(CurrentBoard, Player-Piece, PlayerRow-PlayerCol, PlayerPosition),
+    final_line(game_config(Width, Height), PlayerRow-PlayerCol-PlayerPosition).
+
+%check initial move to the board    
 is_move_possible_start(CurrentBoard, game_config(Width, Height), Current_Player, Current_Player-Piece, Row-Col-Color) :-
     within_bounds(game_config(Width, Height), Row-Col),
     empty_tile(CurrentBoard, Row-Col-Color),
     friendly_color(Current_Player, Row-Col-Color),
     is_close_tile_start(CurrentBoard, game_config(Width, Height), Current_Player-Piece, Row-Col-Color).
+%-----------------------------------------------------------------------------------------%
+
 
 %----------------------CHECK IF THE POSITION IS WITHIN BOUNDS---------------------------%
 within_bounds(game_config(Width, Height), Row-Col) :-
@@ -183,11 +201,33 @@ start_friendly_tile(1,2).
 
 
 
+%----------------------CHECK IF THE TILE IS ON THE FINISH LINE---------------------------%
+is_finish_line(game_config(Width, _),Row-_-_) :-
+    NewRow is Row - 1,
+    is_finish_line_aux(game_config(Width, _),NewRow-_-_).
+is_finish_line(game_config(_, _),Row-_-_) :-
+    NewRow is Row + 1,
+    is_finish_line_aux(game_config(_, _),NewRow-_-_).
+
+is_finish_line_aux(game_config(Width, _),Width-_-_).
+is_finish_line_aux(game_config(_, _), 1-_-_).
+%-----------------------------------------------------------------------------------------%
+
+
+%---------------------CHECK IF THE PIECE IS IN EITHER FINAL LINE-----------------------------------------%
+final_line(game_config(_, _), 1-_-1).
+final_line(game_config(_, _), 1-_-2).
+final_line(game_config(Width, _), Width-_-4).
+final_line(game_config(Width, _), Width-_-3).
+%---------------------------------------------------------------------------------------------------------%
+    
+
+
 board([
-    [tile(1, 1, [(g-black, 0-0), (o-orange, 0-0), (b-blue, 0-0), (' '-yellow, 0-1)]),
+    [tile(1, 1, [(g-black, 0-0), (o-orange, 2-1), (b-blue, 0-0), (' '-yellow, 0-1)]),
      tile(1, 2, [(g-black, 1-2),(o-orange, 0-0), (b-blue, 0-0), (' '-yellow, 0-1)])],
     [tile(2, 1, [(g-black, 0-0),(o-orange, 0-0), (b-blue, 0-0), (' '-yellow, 0-1)]),
      tile(2, 2, [(g-black, 0-0), (o-orange, 0-0) ,(b-blue, 0-0), (' '-yellow, 0-1)])],
      [tile(3, 1, [(g-black, 0-0),(o-orange, 0-0), (b-blue, 0-0), (' '-yellow, 0-1)]),
-     tile(3, 2, [(g-black, 0-0), (o-orange, 0-0) ,(b-blue, 0-0), (' '-yellow, 0-1)])]
+     tile(3, 2, [(g-black, 0-0), (o-orange, 0-0) ,(b-blue, 1-3), (' '-yellow, 0-1)])]
 ]).
