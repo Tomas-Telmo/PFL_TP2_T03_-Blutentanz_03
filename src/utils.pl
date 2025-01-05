@@ -27,6 +27,25 @@ clear_buffer:-
     get_char(C),
     C = '\n',
     !. 
+% ------------------------------read_color(-Color)-----------------------------%
+% Reads a color from the input. Throws the rest of the input away.
+read_color(Color) :-
+    read_color_aux([], Color).
+
+% read_color_aux(+Acc, -Color)
+read_color_aux(Acc, Color) :-
+    peek_code(C),
+    C \= 10, % newline character
+    C \= 46, % dot character
+    !,
+    get_code(C),
+    char_code(Char, C),
+    append(Acc, [Char], NewAcc),
+    read_color_aux(NewAcc, Color).
+
+read_color_aux(Acc, Color) :-
+    atom_chars(Color, Acc).
+ 
 
 
 % ------------------------------COLOR RELATED------------------------%

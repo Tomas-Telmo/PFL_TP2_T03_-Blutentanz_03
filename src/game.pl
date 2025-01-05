@@ -34,7 +34,7 @@ play :-
     write('======================================='), nl,
 
     write('    > Enter board width: '), read_number(Width),clear_buffer, nl,
-    write('    > Enter board height: '), read_number(Height),clear_buffer, nl,
+    write('    > Enter board height (2 rows are already accounted for player spawns): '), read_number(Height),clear_buffer, nl,
     write('    > Enter pieces per player: '), read_number(PiecesPerPlayer),clear_buffer,nl,
     write('    > Enter pieces necessary to win: '), read_number(PiecesNecessaryToWin),clear_buffer,nl,nl,nl,nl,
     
@@ -195,12 +195,12 @@ choose_rotate_type(BoardInfo, BoardInfo_AfterRotate):-
 
 
 
-
 %------------------------------------------ROTATE_ROW_OR_COLUMN-----------------------------------------------%
 %ROW
 rotate_row_or_column(1,boardInfo(Width, Height, Board), boardInfo(Width, Height, NewBoard)):-
     
-    format('Enter row number (1-~w): ', [Height]),
+    Board_Heigth is Height + 1,
+    format('Enter row number, ignoring player spawns (2-~w): ', [Board_Heigth]),
     read_number(Row),clear_buffer,
 
     translate_row_input(Row, Height, RealRow),
@@ -310,7 +310,8 @@ enter_move(piece(Current_Player, PieceNbr), move(piece(Current_Player, PieceNbr)
     read_number(Collumn),clear_buffer,
 
     write('Enter color {orange, blue, gray}: '),
-    read(Color),clear_buffer,
+    
+    read_color(Color),clear_buffer,
 
     write('======================================='), nl,nl,nl.
 
@@ -327,7 +328,7 @@ enter_move(piece(Current_Player, PieceNbr), move(piece(Current_Player, PieceNbr)
   
     move_piece(CurrentBoard, game_config(Width, Height), Player, Player-Piece, RealRow-Col-Color,P1_Available,P1_Pieces_Delivered, NewBoard, New_P1PiecesAvailable, New_P1PiecesDelivered),
 
-    display_current_board(Width,Height,NewBoard), !.
+    display_current_board(Width,Height,NewBoard),nl, !.
 
 
 %PLAYER 2
@@ -340,6 +341,4 @@ move(
   
     move_piece(CurrentBoard, game_config(Width, Height), Player, Player-Piece, RealRow-Col-Color,P2_Available,P2_Delivered, NewBoard, New_P2PiecesAvailable,New_P2PiecesDelivered),
 
-  
-
-    display_current_board(Width,Height,NewBoard), !.
+    display_current_board(Width,Height,NewBoard),nl, !.
