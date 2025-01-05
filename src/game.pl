@@ -89,17 +89,6 @@ createPiecesListHelper(PiecesPerPlayer, Acc, PiecesList) :-
 
 % beginning of a game
 % initial_state(Config, State) initializes the game state.
-
-% Config is a configuration term containing the width and height of the board and the number of pieces per player.
-% State is the initial state of the game, with the first turn, players having the specified number of pieces, and the initial board setup.
-
- %initial_state(Config, Game_State),
-        %config(Width, Height)
-        %game_state(Round, Player1_Info, Player2_Info, PiecesNecessaryToWin, CurrentPlayer ,BoardInfo)),
-
-    %game_state(ROUND, (Player1_Type,Player1_PiecesUnplaced, PLayer1_PiecesDelivered),(Player2_Type,Player2_PiecesUnplaced, PLayer2_PiecesDelivered),PiecesNecessaryToWin,CurrentPlayer, BoardInfo(Width,Height,Board) )),
-
-
   initial_state(game_config(Width, Height), game_state(_, player1Info(Player1_Type, _, _), player2Info(Player2_Type,_, _),PiecesPerPlayer,PiecesNecessaryToWin, _, boardInfo(Width, Height, Board) )) :-
 	
     write('======================================='), nl,
@@ -170,7 +159,7 @@ show_winner(Winner):-
 
 %-------------------------------------------DISPLAY_GAME-----------------------------------------------%
 % CASE- PLAYER 1 turn
-display_game(game_state(Turn, player1Info(_,Player1_Pieces_Available,PLayer1_PiecesDelivered), _, _,_, 1, boardInfo(Width,Height,Board) )):-
+display_game(game_state(Turn, player1Info(_,Player1_Pieces_Available,PLayer1_PiecesDelivered), _, PiecesPerPlayer,PiecesNecessaryToWin, 1, boardInfo(Width,Height,Board) )):-
     
     length(Player1_Pieces_Available,AvailablePieces),
     write('=============='), nl,
@@ -180,13 +169,13 @@ display_game(game_state(Turn, player1Info(_,Player1_Pieces_Available,PLayer1_Pie
     write('|             PLAYER 1 (BLUE)           |'),nl,
     write('========================================='), nl,nl,
 
-    format('Available pieces: ~w', [AvailablePieces]),nl,
-    format('Pieces delivered: ~w', [PLayer1_PiecesDelivered]),nl,nl,
+    format('Available pieces: ~w/~w', [AvailablePieces, PiecesPerPlayer]),nl,
+    format('Pieces delivered: ~w/~w', [PLayer1_PiecesDelivered,PiecesNecessaryToWin]),nl,nl,
     
     display_current_board(Width,Height,Board),nl,nl,nl.
 
 % CASE- PLAYER 2 turn
-display_game(game_state(Turn, _, player2Info(_,Player2_Pieces_Available ,PLayer2_PiecesDelivered),_,_, 2, boardInfo(Width,Height,Board))):-
+display_game(game_state(Turn, _, player2Info(_,Player2_Pieces_Available ,PLayer2_PiecesDelivered),PiecesPerPlayer,PiecesNecessaryToWin, 2, boardInfo(Width,Height,Board))):-
 
     length(Player2_Pieces_Available,AvailablePieces),
     write('=============='), nl,
@@ -196,8 +185,8 @@ display_game(game_state(Turn, _, player2Info(_,Player2_Pieces_Available ,PLayer2
     write('|             PLAYER 2 (ORANGE)         |'),nl,
     write('========================================='), nl,nl,
 
-    format('Available pieces: ~w', [AvailablePieces]),nl,
-    format('Pieces delivered: ~w', [PLayer2_PiecesDelivered]),nl,nl,
+    format('Available pieces: ~w/~w', [AvailablePieces,PiecesPerPlayer]),nl,
+    format('Pieces delivered: ~w/~w', [PLayer2_PiecesDelivered,PiecesNecessaryToWin]),nl,nl,
     
     display_current_board(Width,Height,Board),nl,nl,nl.
 
