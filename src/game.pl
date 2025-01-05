@@ -22,21 +22,47 @@ play :-
     write('|       2. Human vs Computer          |' ),nl,
     write('|       3. Computer vs Human          |'), nl,
     write('|       4. Computer vs Computer       |'), nl,
-    write('======================================='), nl,nl,nl,nl,
+    write('======================================='), nl,nl,
    
-    write('Choose game type (1-4): '), 
-    read_number(GameType),clear_buffer,
-        
+    write('Choose game type (1-4): '),
+    repeat,
+    read_number(GameType), clear_buffer, 
+    (between(1, 4, GameType) -> !, true ; write('Invalid input, try again'), nl, fail),
+
+    nl,nl,
+
 	initial_player_settings(GameType, _, _, Player1_Type, Player2_Type),
 
 	write('======================================='), nl,
     write('|            GAME CONFIGS             |'), nl,
     write('======================================='), nl,
 
-    write('    > Enter board width: '), read_number(Width),clear_buffer, nl,
-    write('    > Enter board height (2 rows are already accounted for player spawns): '), read_number(Height),clear_buffer, nl,
-    write('    > Enter pieces per player: '), read_number(PiecesPerPlayer),clear_buffer,nl,
-    write('    > Enter pieces necessary to win: '), read_number(PiecesNecessaryToWin),clear_buffer,nl,nl,nl,nl,
+
+    write('    > Enter board width (1-20): '), 
+    repeat,
+    read_number(Width),clear_buffer, nl,
+    (between(1, 20, Width) -> !, true ; write('Invalid input, try again'), nl,nl, fail),
+    
+
+    write('    > Enter board height, 2 rows are already accounted for player spawns (1-20): '), 
+    repeat,
+    read_number(Height),clear_buffer, nl,
+    (between(1, 20, Height) -> !, true ; write('Invalid input, try again'), nl,nl, fail),
+    
+    
+    write('    > Enter pieces per player (1-20): '), 
+    repeat,
+    read_number(PiecesPerPlayer),clear_buffer,nl,
+    (between(1, 20, PiecesPerPlayer) -> !, true ; write('Invalid input, try again'), nl,nl, fail),
+    
+    
+    format('    > Enter pieces necessary to win (1-~w): ',[PiecesPerPlayer]), 
+    nl,
+    repeat,
+    read_number(PiecesNecessaryToWin),clear_buffer,nl,
+    (between(1, PiecesPerPlayer, PiecesNecessaryToWin) -> !, true ; write('Invalid input, try again'), nl,nl, fail),
+    
+    nl,nl,nl,
     
     createPiecesList(PiecesPerPlayer, PiecesList),
 
@@ -107,8 +133,8 @@ game_loop( game_state(Turn, player1Info(Player1_Type,Player1_Pieces_Available, P
     
     %PLAYER MOVES------
     choose_rotate_type(BoardInfo, BoardInfo_AfterRotate), 
-    
-    %player_move(MovesLeft,Game_State,NEW_Game_State)
+
+    %player_move(MovesLeft,BoardInfo,Game_State,NEW_Game_State)
     player_move(3,
         game_state(Turn, player1Info(Player1_Type,Player1_Pieces_Available, PLayer1_PiecesDelivered), player2Info(Player2_Type, Player2_Pieces_Available, PLayer2_PiecesDelivered),PiecesPerPlayer,PiecesNecessaryToWin, CurrentPlayer, BoardInfo_AfterRotate ),
         game_state(Turn, player1Info(Player1_Type, NewPlayer1_Pieces_Available, NewPLayer1_PiecesDelivered), player2Info(Player2_Type,NewPlayer2_Pieces_Available, NewPLayer2_PiecesDelivered),PiecesPerPlayer,PiecesNecessaryToWin, CurrentPlayer, UpdatedBoardInfo )), 
@@ -189,7 +215,9 @@ choose_rotate_type(BoardInfo, BoardInfo_AfterRotate):-
     write('======================================='), nl,nl,
 
     write('Choose a rotation type (1-2): '), 
+    repeat,
     read_number(RotateType),clear_buffer,
+    (between(1, 2, RotateType) -> !, true ; write('Invalid input, try again'), nl,nl, fail),
 
     rotate_row_or_column(RotateType,BoardInfo, BoardInfo_AfterRotate).
 
@@ -201,49 +229,61 @@ rotate_row_or_column(1,boardInfo(Width, Height, Board), boardInfo(Width, Height,
     
     Board_Heigth is Height + 1,
     format('Enter row number, ignoring player spawns (2-~w): ', [Board_Heigth]),
+    repeat,
     read_number(Row),clear_buffer,
+    (between(2, Board_Heigth, Row) -> !, true ; write('Invalid input, try again'), nl,nl, fail),
+
 
     translate_row_input(Row, Height, RealRow),
 
     rotate_specified_row(Board, RealRow, NewBoard),
     
-    display_current_board(Width,Height,NewBoard).
+    display_current_board(Width,Height,NewBoard), nl,nl.
 
 
 
 %COLUMN
 rotate_row_or_column(2,boardInfo(Width, Height, Board), boardInfo(Width, Height, NewBoard)):-
+   
     format('Enter collumn number (1-~w): ', [Width]),
+    repeat,
     read_number(Collumn),clear_buffer,
+    (between(1, Width, Collumn) -> !, true ; write('Invalid input, try again'), nl,nl, fail),
 
     rotate_specified_column(Board, Collumn, NewBoard),
     
-    display_current_board(Width,Height,NewBoard).
+    display_current_board(Width,Height,NewBoard), clear_buffer.
 
 
 %-------------------------------------------player_piece-----------------------------------------------%
 %must be recursive until all moves are gone or a player wins
 
 %player1 wins
-player_move(_, game_state(_, player1Info(_,_, PiecesDelivered), _, _, PiecesNecessaryToWin, _, _ ), game_state(_, player1Info(_,_, PiecesDelivered), _, _, PiecesNecessaryToWin, _, _ )) :- 
+player_move(_, 
+game_state(_, player1Info(_,_, PiecesDelivered), _, _, PiecesNecessaryToWin, _, _ ), 
+game_state(_, player1Info(_,_, PiecesDelivered), _, _, PiecesNecessaryToWin, _, _ )) :- 
    PiecesDelivered >= PiecesNecessaryToWin, !.
 
 %player2 wins
-player_move(_, game_state(_, _, player2Info(_,_, PiecesDelivered), _, _, PiecesNecessaryToWin, _, _ ), game_state(_, _, player2Info(_,_, PiecesDelivered), _, _, PiecesNecessaryToWin, _, _ )) :- 
+player_move(_, 
+game_state(_, _, player2Info(_,_, PiecesDelivered), _, _, PiecesNecessaryToWin, _, _ ), 
+game_state(_, _, player2Info(_,_, PiecesDelivered), _, _, PiecesNecessaryToWin, _, _ )) :- 
     PiecesDelivered >= PiecesNecessaryToWin, !.
 
 %no more moves
 player_move(0,FinalGameState,FinalGameState):- !.
+
 
 player_move(MovesLeft,GameState,FinalGamestate):-
     MovesLeft > 0,
     format('MOVES LEFT: ~w', [MovesLeft]),nl,
     %choose a piece and dest coords
     choose_piece(GameState, Piece), 
-    enter_move(Piece, Move), %would need some sort of fail safe if move is invalid
+    enter_move(GameState, Piece, Move),
     
     %recieve a move, update the gamestate as necessary and update the board
     move(GameState, Move, NewGameState), 
+
     NewMovesLeft is MovesLeft - 1,
 
     player_move(NewMovesLeft,NewGameState,FinalGamestate).
@@ -266,7 +306,9 @@ choose_piece(game_state(_, player1Info(_,Player1_Pieces_Available, _),_,_,_, 1, 
     write('======================================='), nl,nl,
 
     format('Enter piece number (1 to ~w): ', [PiecesAvailable]),
-    read_number(PieceNbr), clear_buffer.
+    repeat,
+    read_number(PieceNbr), clear_buffer,
+    (between(1, PiecesAvailable, PieceNbr) -> !, true ; write('Invalid input, try again'), nl,nl, fail).
 
 %CASE PLAYER 2
 choose_piece(game_state(_, _, player2Info(_,Player2_Pieces_Available, _),_,_, 2, _ ), piece(2, PieceNbr)):-
@@ -282,7 +324,10 @@ choose_piece(game_state(_, _, player2Info(_,Player2_Pieces_Available, _),_,_, 2,
     write('======================================='), nl,nl,
 
     format('Enter piece number (1 to ~w): ', [PiecesAvailable]),
-    read_number(PieceNbr), clear_buffer.
+    repeat,
+    read_number(PieceNbr), clear_buffer,
+    (between(1, PiecesAvailable, PieceNbr) -> !, true ; write('Invalid input, try again'), nl,nl, fail).
+    
 
 
 display_available_pieces([]) :- !.
@@ -293,24 +338,28 @@ display_available_pieces([Head | Tail]) :-
 
 
 %-------------------------------------------ENTER_MOVE-----------------------------------------------%
-enter_move(piece(Current_Player, PieceNbr), move(piece(Current_Player, PieceNbr), dest(Row, Collumn, Color))):-
+
+enter_move( game_state(_, _, _,_,_, _, boardInfo(Width,Height,_)), piece(Current_Player, PieceNbr), move(piece(Current_Player, PieceNbr), dest(Row, Collumn, Color))):-
 
     format('--> Piece Choosen: ~w - ~w       ', [Current_Player, PieceNbr]), nl,
 
     write('======================================='), nl,
     write('|==   ==   Select target tile   ==   ==|'), nl,
      write('======================================='), nl,
-    %write('Enter row number (1-~w): ', [Height]),nl,
     
-    write('Enter row number: '),
+    format('Enter row number (1-~w): ', [Height]),nl,
+    repeat,
     read_number(Row),clear_buffer,
+    (between(1, Height, Row) -> !, true ; write('Invalid input, try again'), nl,nl, fail),
+   
 
-    %write('Enter collumn number (1-~w): ', [Width]),nl,
-    write('Enter collumn number: '),
+    format('Enter collumn number (1-~w): ', [Width]),nl,  
+    repeat,
     read_number(Collumn),clear_buffer,
+    (between(1, Width, Collumn) -> !, true ; write('Invalid input, try again'), nl,nl, fail),
 
-    write('Enter color {orange, blue, gray}: '),
-    
+
+    write('Enter color {orange, blue, gray}: '),    
     read_color(Color),clear_buffer,
 
     write('======================================='), nl,nl,nl.

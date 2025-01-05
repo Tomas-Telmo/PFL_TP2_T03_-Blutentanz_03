@@ -16,7 +16,12 @@ initial_player_settings(2, none, Difficulty, human, Player2_Type) :- % H/PC
     write('|  2. Expert               |' ), nl,
     write('==========================='), nl,nl,nl,nl,
 	
-    write('Enter difficulty for BOT: '), read_number(Difficulty),clear_buffer,nl,nl,nl,
+    write('Enter difficulty for BOT (1-2): '), 
+    
+    repeat,
+    read_number(Difficulty),clear_buffer,
+    (between(1, 2, Difficulty) -> !, true ; write('Invalid input, try again'), nl,nl, fail),
+    
 
     initial_player_settings_aux(2, none, Difficulty, human, Player2_Type).
 
@@ -30,7 +35,12 @@ initial_player_settings(3, Difficulty, none, Player1_Type, human) :- % PC/H
     write('|  2. Expert               |' ), nl,
     write('==========================='), nl,
 	
-	write('Enter difficulty for BOT: '), read_number(Difficulty),clear_buffer,nl,nl,nl,
+	write('Enter difficulty for BOT (1-2): '), 
+    repeat,
+    read_number(Difficulty),clear_buffer,
+    (between(1, 2, Difficulty) -> !, true ; write('Invalid input, try again'), nl,nl, fail),
+
+    nl,nl,nl,
 
     initial_player_settings_aux(3, Difficulty, none ,Player1_Type, human).
 
@@ -45,8 +55,10 @@ initial_player_settings(4, Difficulty1, Difficulty2, Player1_Type, Player2_Type)
     write('|  2. Expert               |' ), nl,
     write('==========================='), nl,
 	
-    write('Enter difficulty for BOT-1: '), read_number(Difficulty1),clear_buffer,
-
+    write('Enter difficulty for BOT-1 (1-2): '), 
+    repeat,
+    read_number(Difficulty1),clear_buffer,
+    (between(1, 2, Difficulty1) -> !, true ; write('Invalid input, try again'), nl,nl, fail),
 
 	write('==========================='), nl,
     write('|  SELECT BOT-2 DIFFICULTY |'), nl,
@@ -55,7 +67,12 @@ initial_player_settings(4, Difficulty1, Difficulty2, Player1_Type, Player2_Type)
     write('|  2. Expert               |' ), nl,
     write('==========================='), nl,
 	
-    write('Enter difficulty for BOT-2: '), read_number(Difficulty2),clear_buffer,nl,nl,nl,
+    write('Enter difficulty for BOT-2 (1-2): '), 
+    repeat,
+    read_number(Difficulty2),clear_buffer,
+    (between(1, 2, Difficulty2) -> !, true ; write('Invalid input, try again'), nl,nl, fail),
+    
+    nl,nl,nl,
 
     initial_player_settings_aux(4, Difficulty1, Difficulty2, Player1_Type, Player2_Type).
 

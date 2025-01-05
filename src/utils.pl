@@ -4,21 +4,40 @@
 
 % ------------------------------read_number(-X)-----------------------------%
 % Reads the first digits of a number. Throws the rest of the input away.
-read_number(X):-
-    read_number_aux(0,false,X).
+% Main loop to read a valid game type
+% Read a number
 
-% read_number_aux(+Acc,+HasAtLeastOneDigit,-X)
-read_number_aux(Acc,_,X):- 
+% Read a number
+read_number(X) :-
+    read_number_aux(0, false, X).
+
+% Auxiliary predicate to process input
+read_number_aux(Acc, _, X) :-
     peek_code(C),
-    C >= 48,
-    C =< 57,
-    !, % used to ensure read_number is determinate
+    C >= 48,  % ASCII code for '0'
+    C =< 57,  % ASCII code for '9'
+    !,        
     get_code(_),
-    Acc1 is 10*Acc + (C - 48),
-    read_number_aux(Acc1,true,X).
-    
-read_number_aux(X,true,X).
+    Acc1 is 10 * Acc + (C - 48),
+    read_number_aux(Acc1, true, X).
 
+% If we have at least one digit, return the number
+read_number_aux(X, true, X).
+
+% Handle invalid input (non-digit characters)
+read_number_aux(_, _, _) :-
+    peek_code(C),
+    (C < 48 ; C > 57),  % If it's not a digit
+    get_code(_),        % Consume the invalid character
+    fail.               % Fail the predicate to retry
+
+% Clear the input buffer
+clear_buffer :-
+    repeat,
+    peek_code(Code),
+    (Code = -1 ; Code = 10),  % End of input or newline
+    !,                        % Exit if buffer is cleared
+    get_code(_).              % Consume the character
 
 % ------------------------------clear_buffer------------------------%
 % Clears the input buffer.
