@@ -6,9 +6,9 @@
 
 %----------------------GET TOKES TILE AND PLACE----------------------------%
 % Finds the piece of the bot in the board
-find_bot_piece([], _, _, not_on_board).
+find_bot_piece([], _, _, not_on_board) :- !.
 find_bot_piece([Row | Rest], Player_Piece, RowNum-ColNum, Position) :- 
-    find_bot_piece_aux(Row, Player_Piece, RowNum-ColNum, Position);
+    find_bot_piece_aux(Row, Player_Piece, RowNum-ColNum, Position), !;
     find_bot_piece(Rest, Player_Piece, RowNum-ColNum, Position).
 
 find_bot_piece_aux([], _, _, _) :- fail.
@@ -51,27 +51,31 @@ get_possible_moves_aux(Board, Player, TotalPieceNum, CurrentPieceNum, AllMoves) 
 
 
 %----------------------FIND POSSIBLE MOVES FOR PIECE ALREADY ON BOARD----------------------------%
-process_move_on_board([], _, _, _, []) :- !.
-process_move_on_board([tile(Row, Col, [( _-Color, 0-0), _, _, _]) | Rest], Player-Piece, [Piece-Row-Col-Color | Moves]) :- 
-    find_bot_piece(Board, Player-Piece, RowNum-ColNum, Position),
+process_move_on_board(_, [], _, []) :- !.
+process_move_on_board(Board, [tile(Row, Col, [( _-Color, 0-0), _, _, _]) | Rest], Player-Piece, [Piece-Row-Col-Color | Moves]) :- 
+    find_bot_piece(Board, Player-Piece, _, Position),
     friendly_tile(Position, 1),
-    process_move_on_board(Rest, Player-Piece, Moves).
+    friendly_color(Player, Row-Col-Color),
+    process_move_on_board(Board, Rest, Player-Piece, Moves).
 
-process_move_on_board([tile(Row, Col, [_, ( _-Color, 0-0), _, _]) | Rest], Player-Piece, [Piece-Row-Col-Color | Moves]) :- 
-    find_bot_piece(Board, Player-Piece, RowNum-ColNum, Position),
+process_move_on_board(Board, [tile(Row, Col, [_, ( _-Color, 0-0), _, _]) | Rest], Player-Piece, [Piece-Row-Col-Color | Moves]) :- 
+    find_bot_piece(Board, Player-Piece, _, Position),
     friendly_tile(Position, 2),
-    process_move_on_board(Rest, Player-Piece, Moves).
+    friendly_color(Player, Row-Col-Color),
+    process_move_on_board(Board, Rest, Player-Piece, Moves).
 
-process_move_on_board([tile(Row, Col, [ _, _, ( _-Color, 0-0), _]) | Rest], Player-Piece, [Piece-Row-Col-Color | Moves]) :- 
-    find_bot_piece(Board, Player-Piece, RowNum-ColNum, Position),
+process_move_on_board(Board, [tile(Row, Col, [ _, _, ( _-Color, 0-0), _]) | Rest], Player-Piece, [Piece-Row-Col-Color | Moves]) :- 
+    find_bot_piece(Board, Player-Piece, _, Position),
     friendly_tile(Position, 3),
-    process_move_on_board(Rest, Player-Piece, Moves).
+    friendly_color(Player, Row-Col-Color),
+    process_move_on_board(Board, Rest, Player-Piece, Moves).
 
-process_move_on_board([tile(Row, Col, [_, _, _, ( _-Color, 0-0)]) | Rest], Player-Piece, [Piece-Row-Col-Color | Moves]) :- 
-    find_bot_piece(Board, Player-Piece, RowNum-ColNum, Position),
+process_move_on_board(Board, [tile(Row, Col, [_, _, _, ( _-Color, 0-0)]) | Rest], Player-Piece, [Piece-Row-Col-Color | Moves]) :- 
+    find_bot_piece(Board, Player-Piece, _, Position),
     friendly_tile(Position, 4),
-    process_move_on_board(Rest, Player-Piece, Moves).
-
+    friendly_color(Player, Row-Col-Color),
+    process_move_on_board(Board, Rest, Player-Piece, Moves).
+%------------------------------------------------------------------------------------------------------------%
 
     
 
@@ -94,7 +98,7 @@ process_move_off_board([tile(Row, Col, [_, _, _, ( _-Color, 0-0)]) | Rest], Play
 
 board([
     [tile(1, 1, [(g-black, 0-0), (o-orange, 0-0), (b-blue, 0-0), (' '-yellow, 0-1)]),
-     tile(1, 2, [(g-black, 1-2),(o-orange, 0-0), (b-blue, 0-0), (' '-yellow, 0-1)])],
+     tile(1, 2, [(g-black, 0-0),(o-orange, 0-0), (b-blue, 1-2), (' '-yellow, 0-1)])],
     [tile(2, 1, [(g-black, 0-0),(o-orange, 0-0), (b-blue, 0-0), (' '-yellow, 0-1)]),
      tile(2, 2, [(g-black, 0-0), (o-orange, 0-0) ,(b-blue, 0-0), (' '-yellow, 0-1)])]
 ]).
