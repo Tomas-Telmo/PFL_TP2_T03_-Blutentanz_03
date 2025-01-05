@@ -33,10 +33,10 @@ play :-
     write('|            GAME CONFIGS             |'), nl,
     write('======================================='), nl,
 
-    write('       >Enter board width:           '), read_number(Width),clear_buffer, nl,
-    write('       >Enter board height:          '), read_number(Height),clear_buffer, nl,
-    write('       >Enter pieces per player:     '), read_number(PiecesPerPlayer),clear_buffer,nl,
-    write('       >Enter pieces necessary to win:     '), read_number(PiecesNecessaryToWin),clear_buffer,nl,nl,nl,nl,
+    write('    > Enter board width: '), read_number(Width),clear_buffer, nl,
+    write('    > Enter board height: '), read_number(Height),clear_buffer, nl,
+    write('    > Enter pieces per player: '), read_number(PiecesPerPlayer),clear_buffer,nl,
+    write('    > Enter pieces necessary to win: '), read_number(PiecesNecessaryToWin),clear_buffer,nl,nl,nl,nl,
     
         
 

@@ -22,16 +22,33 @@ generate_initial_board(Width, Height, RandomizedBoard) :-
 
 % Display the board
 display_current_board(Width, Height, Board) :-
+    draw_padding(0),
+    draw_top_base(Width),nl,
+
+    draw_padding(1),
+    Collumn_Counter is Height + 2,
+    draw_Y_coordinates(Collumn_Counter),
+    draw_padding(2),
     
     draw_base(Width, 'ORANGE'),nl,
-    display_board_rows(Height, Board),
 
+    NewCollumn_Counter is Collumn_Counter - 1,
+    display_board_rows(NewCollumn_Counter, Board),
+
+    draw_padding(0),
+    draw_top_base(Width),nl,
+
+    draw_padding(1),
+    draw_Y_coordinates(1),
+    draw_padding(2),
+    draw_base(Width, 'BLUE'),nl,
+    
     draw_padding(0),
     draw_bottom_borders(Width), nl,
     
     draw_padding(0),
-    draw_X_coordinates(Width,0),nl,
-    draw_base(Width, 'BLUE'),nl,nl.
+    draw_X_coordinates(Width,0),nl.
+    
 
 display_board_rows(_,[]) :- !.
 display_board_rows(Collumn_Counter,[Row | Rest]) :-
@@ -44,6 +61,7 @@ display_board_rows(Collumn_Counter,[Row | Rest]) :-
 
 % Draw the entire row in sections with '++' separators
 draw_row(Tiles, Collumn_Counter) :-
+
     draw_padding(0),
     draw_top_borders(Tiles), nl,
 
@@ -73,18 +91,23 @@ draw_padding(2) :- write(' ').
 
 
 %------------------DRAW PLAYER BASES------------------%
-draw_base(Width, Color) :-
-    write('       '),
-    Half_Width is Width // 2,
-    draw_base_aux(Half_Width),
-    format('        ~w BASE      ', [Color]),
-    draw_base_aux(Half_Width).
-
-draw_base_aux(1).
-draw_base_aux(Half_Width) :-
-    write('/////////////'),
-    NEW_Width is Half_Width - 1,
+draw_top_base(0).
+draw_top_base(Width) :-
+    write('+-----+-----+'),
+    NEW_Width is Width - 1,
     draw_base_aux(NEW_Width).
+
+
+draw_base(0,_).
+draw_base(Width,'BLUE'):-
+    write('|    BLUE   |'),
+    NEW_Width is Width - 1,
+    draw_base_aux(NEW_Width,'BLUE').
+
+draw_base(Width,'ORANGE'):-
+    write('|   ORANGE  |'),
+    NEW_Width is Width - 1,
+    draw_base_aux(NEW_Width,'ORANGE').
 
 %------------------DRAW COORDINATES------------------%
 draw_Y_coordinates(Counter):-
