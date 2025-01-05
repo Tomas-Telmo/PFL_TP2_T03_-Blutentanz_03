@@ -124,13 +124,3 @@ get_close_tiles(Board, Player-Piece, CloseTiles) :-
 get_tile()
     
     
-
-
-board([
-    [tile(1, 1, [(g-gray, 0-0), (o-orange, 2-1), (b-blue, 0-0), (' '-yellow, 0-1)]),
-     tile(1, 2, [(g-gray, 1-2),(o-orange, 0-0), (b-blue, 0-0), (' '-yellow, 0-1)])],
-    [tile(2, 1, [(g-gray, 0-0),(o-orange, 0-0), (b-blue, 0-0), (' '-yellow, 0-1)]),
-     tile(2, 2, [(g-gray, 0-0), (o-orange, 0-0) ,(b-blue, 0-0), (' '-yellow, 0-1)])],
-     [tile(3, 1, [(g-gray, 0-0),(o-orange, 0-0), (b-blue, 0-0), (' '-yellow, 0-1)]),
-     tile(3, 2, [(g-gray, 0-0), (o-orange, 0-0) ,(b-blue, 1-3), (' '-yellow, 0-1)])]
-]).

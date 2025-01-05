@@ -97,20 +97,21 @@ is_move_possible(CurrentBoard, game_config(Width, Height), Current_Player, Curre
     within_bounds(game_config(Width, Height), Row-Col),
     empty_tile(CurrentBoard, Row-Col-Color),
     friendly_color(Current_Player, Row-Col-Color),
-    is_close_tile(CurrentBoard, Current_Player-Piece, Row-Col-Color).
+    is_close_tile(CurrentBoard, Current_Player-Piece, Row-Col-Color), !.
 
 %check move to see if the piece is in the final line and can go on
-is_move_possible(CurrentBoard, game_config(Width, Height), Player, Player-Piece, Row-Col-_) :-
+is_move_possible(CurrentBoard, game_config(Width, Height), Player, Player-Piece, Row-Col-Color) :-
+    friendly_color(Player, Row-Col-Color),
     is_finish_line(game_config(Width, Height),Row-Col-_),
     find_player_piece(CurrentBoard, Player-Piece, PlayerRow-PlayerCol, PlayerPosition),
-    final_line(game_config(Width, Height), PlayerRow-PlayerCol-PlayerPosition).
+    final_line(game_config(Width, Height), PlayerRow-PlayerCol-PlayerPosition) , !.
 
 %check initial move to the board    
 is_move_possible_start(CurrentBoard, game_config(Width, Height), Current_Player, Current_Player-Piece, Row-Col-Color) :-
     within_bounds(game_config(Width, Height), Row-Col),
     empty_tile(CurrentBoard, Row-Col-Color),
     friendly_color(Current_Player, Row-Col-Color),
-    is_close_tile_start(CurrentBoard, game_config(Width, Height), Current_Player-Piece, Row-Col-Color).
+    is_close_tile_start(CurrentBoard, game_config(Width, Height), Current_Player-Piece, Row-Col-Color) , !.
 %-----------------------------------------------------------------------------------------%
 
 
@@ -227,3 +228,11 @@ final_line(game_config(Width, _), Width-_-3).
 
 
 
+board([
+    [tile(1, 1, [(g-gray, 0-0), (o-orange, 2-1), (b-blue, 0-0), (' '-yellow, 0-1)]),
+     tile(1, 2, [(g-gray, 1-2),(o-orange, 0-0), (b-blue, 0-0), (' '-yellow, 0-1)])],
+    [tile(2, 1, [(g-gray, 0-0),(o-orange, 0-0), (b-blue, 0-0), (' '-yellow, 0-1)]),
+     tile(2, 2, [(g-gray, 0-0), (o-orange, 0-0) ,(b-blue, 0-0), (' '-yellow, 0-1)])],
+     [tile(3, 1, [(g-gray, 0-0),(o-orange, 0-0), (b-blue, 0-0), (' '-yellow, 0-1)]),
+     tile(3, 2, [(g-gray, 0-0), (o-orange, 0-0) ,(b-blue, 1-3), (' '-yellow, 0-1)])]
+]).
