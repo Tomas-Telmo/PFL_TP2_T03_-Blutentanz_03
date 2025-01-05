@@ -252,7 +252,7 @@ rotate_row_or_column(2,boardInfo(Width, Height, Board), boardInfo(Width, Height,
 
     rotate_specified_column(Board, Collumn, NewBoard),
     
-    display_current_board(Width,Height,NewBoard), clear_buffer.
+    display_current_board(Width,Height,NewBoard).
 
 
 %-------------------------------------------player_piece-----------------------------------------------%
@@ -273,20 +273,25 @@ game_state(_, _, player2Info(_,_, PiecesDelivered), _, _, PiecesNecessaryToWin, 
 %no more moves
 player_move(0,FinalGameState,FinalGameState):- !.
 
-
-player_move(MovesLeft,GameState,FinalGamestate):-
+player_move(MovesLeft, GameState, FinalGameState) :-
     MovesLeft > 0,
-    format('MOVES LEFT: ~w', [MovesLeft]),nl,
-    %choose a piece and dest coords
-    choose_piece(GameState, Piece), 
+    format('MOVES LEFT: ~w', [MovesLeft]), nl,
+    % choose a piece and destination coordinates
+    choose_piece(GameState, Piece),
+   
     enter_move(GameState, Piece, Move),
     
-    %recieve a move, update the gamestate as necessary and update the board
-    move(GameState, Move, NewGameState), 
-
-    NewMovesLeft is MovesLeft - 1,
-
-    player_move(NewMovesLeft,NewGameState,FinalGamestate).
+    (check_move(GameState, Move) 
+    ->
+        % if the move is valid, update the game state
+        move(GameState, Move, NewGameState),
+        NewMovesLeft is MovesLeft - 1,
+        player_move(NewMovesLeft, NewGameState, FinalGameState)
+    ;
+        % if the move is invalid, restart the process
+        write('Invalid move, restarting...'), nl,
+        player_move(MovesLeft, GameState, FinalGameState)
+    ).
 
 
 
@@ -343,14 +348,15 @@ enter_move( game_state(_, _, _,_,_, _, boardInfo(Width,Height,_)), piece(Current
 
     format('--> Piece Choosen: ~w - ~w       ', [Current_Player, PieceNbr]), nl,
 
+    Adapted_Height is Height +2,
     write('======================================='), nl,
     write('|==   ==   Select target tile   ==   ==|'), nl,
      write('======================================='), nl,
     
-    format('Enter row number (1-~w): ', [Height]),nl,
+    format('Enter row number (1-~w): ', [Adapted_Height]),nl,
     repeat,
     read_number(Row),clear_buffer,
-    (between(1, Height, Row) -> !, true ; write('Invalid input, try again'), nl,nl, fail),
+    (between(1, Adapted_Height, Row) -> !, true ; write('Invalid input, try again'), nl,nl, fail),
    
 
     format('Enter collumn number (1-~w): ', [Width]),nl,  
@@ -362,8 +368,31 @@ enter_move( game_state(_, _, _,_,_, _, boardInfo(Width,Height,_)), piece(Current
     write('Enter color {orange, blue, gray}: '),    
     read_color(Color),clear_buffer,
 
-    write('======================================='), nl,nl,nl.
+    write('======================================='), 
+    
+    
+    nl,nl,nl.
 
+%------------------------------------------- CHECK_MOVE -----------------------------------------------%
+%PLAYER1
+check_move(game_state(_, _, _,_,_, 1, boardInfo(Width,Height,CurrentBoard)), move(piece(1, Piece), dest(Row, Col, Color))):-   
+    translate_row_input(Row, Height, RealRow), 
+    is_move_possible(CurrentBoard, game_config(Width, Height), 1, 1-Piece, RealRow-Col-Color), !.
+   
+%PLAYER1 Base
+check_move(game_state(_, _, _,_,_, 1, boardInfo(Width,Height,CurrentBoard)), move(piece(1, Piece), dest(Row, Col, Color))):-    
+    translate_row_input(Row, Height, RealRow),
+    is_move_possible_start(CurrentBoard, game_config(Width, Height), 1, 1-Piece, RealRow-Col-Color), !.
+
+%PLAYER2 
+check_move(game_state(_, _, _,_,_, 2, boardInfo(Width,Height,CurrentBoard)), move(piece(2, Piece), dest(Row, Col, Color))):-    
+    translate_row_input(Row, Height, RealRow), 
+    is_move_possible(CurrentBoard, game_config(Width, Height), 2, 2-Piece, RealRow-Col-Color), !.
+
+%PLAYER2 BASE
+check_move(game_state(_, _, _,_,_, 2, boardInfo(Width,Height,CurrentBoard)), move(piece(2, Piece), dest(Row, Col, Color))):-    
+    translate_row_input(Row, Height, RealRow), 
+    is_move_possible_start(CurrentBoard, game_config(Width, Height), 2, 2-Piece, RealRow-Col-Color), !.
 
 %------------------------------------------- MOVE -----------------------------------------------%
 
