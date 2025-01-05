@@ -118,8 +118,8 @@ is_move_possible_start(CurrentBoard, game_config(Width, Height), Current_Player,
 within_bounds(game_config(Width, Height), Row-Col) :-
     Row > 0,
     Col > 0,
-    Row =< Height,
-    Col =< Width.
+    Row =< Width,
+    Col =< Height.
 
 %----------------------CHECK IF THE TILE IS EMPTY---------------------------%
 empty_tile(CurrentBoard, Row-Col-Color) :-
@@ -189,12 +189,12 @@ find_next(tile(_, _, [ _, _, _,(_-Color, _)]), Color, 4).
 %Checks if the tile is a friendly place to put the piece(if it iss on the direct side of the piece)%
 friendly_tile(1,2).
 friendly_tile(1,3).
-friendly_tile(4,2).
-friendly_tile(4,3).
 friendly_tile(2,1).
 friendly_tile(2,4).
 friendly_tile(3,1).
 friendly_tile(3,4).
+friendly_tile(4,2).
+friendly_tile(4,3).
 
 %Checks if the move to the board is one of the closest to the border%
 start_friendly_tile(2,3).
