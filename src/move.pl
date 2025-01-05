@@ -4,22 +4,25 @@
 
 %----------------------MAKE A MOVE---------------------------------------------% 
 %-Move a piece inside the board
-move_piece(CurrentBoard, game_config(Width, Height), Player, Player-Piece, Row-Col-Color, NewFinalBoard) :- 
+move_piece(CurrentBoard, game_config(Width, Height), Player, Player-Piece, Row-Col-Color, Pieces_Available, Pieces_Delivered, NewFinalBoard, Pieces_Available, Pieces_Delivered) :- 
     is_move_possible(CurrentBoard, game_config(Width, Height), Player, Player-Piece, Row-Col-Color),
     move_update_board(CurrentBoard, Player-Piece, 0-0, NewBoard),
     move_place_piece(NewBoard, Row-Col-Color, Player-Piece, NewFinalBoard) , !.
 
-%Move a piece from inside the board to the board
-move_piece(CurrentBoard, game_config(Width, Height), Player, Player-Piece, Row-Col-Color, NewFinalBoard) :-
+%Move a piece from outside the board to the board
+move_piece(CurrentBoard, game_config(Width, Height), Player, Player-Piece, Row-Col-Color, Pieces_Available, Pieces_Delivered, NewFinalBoard, Pieces_Available,Pieces_Delivered  ) :-
     is_move_possible_start(CurrentBoard, game_config(Width, Height), Player, Player-Piece, Row-Col-Color),
     move_place_piece(CurrentBoard, Row-Col-Color, Player-Piece, NewFinalBoard), !.
 
 %Move out a piece from the board (FINISHED)
-move_piece(CurrentBoard, game_config(Width, Height), Player, Player-Piece, Row-Col-Color, NewFinalBoard) :-
+move_piece(CurrentBoard, game_config(Width, Height), Player, Player-Piece, Row-Col-Color, Pieces_Available,Pieces_Delivered, NewFinalBoard, NewPieces_Available, NewPieces_Delivered) :-
      is_move_possible(CurrentBoard, game_config(Width, Height), Player, Player-Piece, Row-Col-Color),
-     move_update_board(CurrentBoard, Player-Piece, 0-0, NewFinalBoard), !.
+     move_update_board(CurrentBoard, Player-Piece, 0-0, NewFinalBoard), 
+     remove_available_piece(Pieces_Available, Piece, NewPieces_Available),
+    NewPieces_Delivered is Pieces_Delivered + 1, 
+     !.
 
-move_piece(_, _, _, _, _, _) :- fail.
+move_piece(_, _, _, _, _, _, _, _, _, _) :- fail.
 %-----------------------------------------------------------------------------------------------------%
 
 

@@ -30,7 +30,7 @@ display_current_board(Width, Height, Board) :-
     draw_Y_coordinates(Collumn_Counter),
     draw_padding(2),
     
-    draw_base(Width, 'ORANGE'),nl,
+    draw_base(Width, 'BLUE'),nl,
 
     NewCollumn_Counter is Collumn_Counter - 1,
     display_board_rows(NewCollumn_Counter, Board),
@@ -41,7 +41,7 @@ display_current_board(Width, Height, Board) :-
     draw_padding(1),
     draw_Y_coordinates(1),
     draw_padding(2),
-    draw_base(Width, 'BLUE'),nl,
+    draw_base(Width, 'ORANGE'),nl,
     
     draw_padding(0),
     draw_bottom_borders(Width), nl,
@@ -95,19 +95,23 @@ draw_top_base(0).
 draw_top_base(Width) :-
     write('+-----+-----+'),
     NEW_Width is Width - 1,
-    draw_base_aux(NEW_Width).
+    draw_top_base(NEW_Width).
 
 
 draw_base(0,_).
 draw_base(Width,'BLUE'):-
-    write('|    BLUE   |'),
+    write('|'),     
+    print_color_word('   BLUE    ', blue),
+    write('|'),
     NEW_Width is Width - 1,
-    draw_base_aux(NEW_Width,'BLUE').
+    draw_base(NEW_Width,'BLUE').
 
 draw_base(Width,'ORANGE'):-
-    write('|   ORANGE  |'),
+    write('|'),     
+    print_color_word('   ORANGE  ', orange),
+    write('|'),     
     NEW_Width is Width - 1,
-    draw_base_aux(NEW_Width,'ORANGE').
+    draw_base(NEW_Width,'ORANGE').
 
 %------------------DRAW COORDINATES------------------%
 draw_Y_coordinates(Counter):-

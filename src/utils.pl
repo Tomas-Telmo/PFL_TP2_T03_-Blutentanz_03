@@ -54,7 +54,10 @@ print_color(Text, Color) :-
     color_code(reset, Reset),
     format("~s~w~s", [Code, Text, Reset]).
 
-
+print_color_word(Word, Color) :-
+    color_code(Color, Code),
+    color_code(reset, Reset),
+    format("~s~w~s", [Code, Word, Reset]).
   
 %funçao para rodar a lista 90 graus para a direita como so temos uma 2x2 podemos fazer a rotaçao manualmente.
 rotate_90_right([A, B, C, D], [C, A, D, B]).
@@ -101,3 +104,15 @@ rotate_specified_column(Board, ColNum, NewBoard) :-
 
 %------------------------------------------------------------------------------------------%
 
+%----------------TRANSLATES TO ACTUAL LOGICAL INDEX----------------------------------------%
+translate_row_input(Row, Height, Final) :-
+    RealRow is Row - 1,
+    T1 is Height - RealRow, 
+    Final is T1 + 1.
+%-----------------------------------------------------------------------------------------%
+
+
+%-----------------REMOVE PIECE FROM AVAILABLE PIECES--------------------------------------%
+% Remove a piece from the list of available pieces
+remove_available_piece(Piece, Pieces_Available, Updated_Pieces_Available) :-
+    select(Piece, Pieces_Available, Updated_Pieces_Available).
