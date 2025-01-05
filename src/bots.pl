@@ -21,6 +21,9 @@ find_bot_piece_aux([_ | Rest], Player_Piece, Row-Col, Position) :-
 %---------------------------------------------------------------------------%
 
 
+
+
+
 %----------------------GET POSSIBLE MOVES----------------------------%
 % goes trough all bot pieces and finds all possible moves
 get_possible_moves(Board, Player, TotalPieceNum, PossibleMoves) :-
@@ -38,19 +41,28 @@ get_possible_moves_aux(Board, Player, TotalPieceNum, CurrentPieceNum, AllMoves) 
 
 
 
-%----------------------FIND POSSIBLE MOVES FOR PIECE----------------------------%
-% finds all possible moves for a piece that is not on the board yet PLAYER 1
-%find_possible_moves_for_piece(Board, game_config(width, height), 1-CurrentPieceNum, _, not_on_board, Moves) :- 
-%    find_possible_moves_for_piece_start(Board, game_config(width, height), 1-CurrentPieceNum, Moves).
 
 
-%find_possible_moves_for_piece_start(Board, game_config(width, height), 1-CurrentPieceNum, Moves) :-
-%    nth1(height, Board, TargetRow).
 
+%---------------------------------FIND POSSIBLE MOVES FOR PIECE AND CAN GET FINAL MOVE----------------------------%
+%process_move_on_board_bot(+Board, +game_config, +Tiles, +Player-Piece, -FinalMoves)
+process_move_on_board_bot(Board, game_config(Width, Height), Tiles, Player-Piece, FinalMoves) :-
+    !,
+    find_bot_piece(Board, Player-Piece, BotRow-BotCol, Position),
+    is_finish_line(game_config(Width, Height), BotRow-BotCol-_),
+    final_line(game_config(Width, Height), BotRow-BotCol-Position),
+    process_move_on_board(Board, Tiles, Player-Piece, Moves),
+    process_final_move_on_board(Board, game_config(Width, Height), Player-Piece, FinalMove),
+    append(Moves, FinalMove, FinalMoves).
 
+process_move_on_board_bot(Board, _, Tiles, Player-Piece, Moves) :-
+    !,
+    process_move_on_board(Board, Tiles, Player-Piece, Moves).
+%------------------------------------------------------------------------------------------------------------%
 
 
 %----------------------FIND POSSIBLE MOVES FOR PIECE ALREADY ON BOARD----------------------------%
+%process_moves_on_board(+Board, +Tiles, +Player-Piece, -Moves)
 process_move_on_board(_, [], _, []) :- !.
 process_move_on_board(Board, [tile(Row, Col, [( _-Color, 0-0), _, _, _]) | Rest], Player-Piece, [Piece-Row-Col-Color | Moves]) :- 
     find_bot_piece(Board, Player-Piece, _, Position),
@@ -77,7 +89,16 @@ process_move_on_board(Board, [tile(Row, Col, [_, _, _, ( _-Color, 0-0)]) | Rest]
     process_move_on_board(Board, Rest, Player-Piece, Moves).
 %------------------------------------------------------------------------------------------------------------%
 
-    
+
+%------------------------------FIND POSSIBLE FINAL MOVE TO PIECE-------------------------------------%
+%process_final_move_on_board(+Board, +game_config, +Player-Piece, -FinalMove)
+process_final_move_on_board(Board, game_config(Width, _), 1-Piece, [Piece-FinalWidth-BotCol-blue]) :-
+        find_bot_piece(Board, 1-Piece, _-BotCol, _),
+        FinalWidth is Width + 1.
+
+process_final_move_on_board(Board, _, 2-Piece, [Piece-0-BotCol-orange]) :-        
+        find_bot_piece(Board, 2-Piece, _-BotCol, _).
+%------------------------------------------------------------------------------------------------------------%
 
 
 
@@ -96,9 +117,20 @@ process_move_off_board([tile(Row, Col, [_, _, _, ( _-Color, 0-0)]) | Rest], Play
 %------------------------------------------------------------------------------------------------------------%
 
 
+get_close_tiles(Board, Player-Piece, CloseTiles) :-
+    find_bot_piece(Board, Player-Piece, Row-Col, Position),
+    get_close_tiles_aux(Board, Row-Col, Position, CloseTiles).
+
+get_tile()
+    
+    
+
+
 board([
-    [tile(1, 1, [(g-black, 0-0), (o-orange, 0-0), (b-blue, 0-0), (' '-yellow, 0-1)]),
-     tile(1, 2, [(g-black, 0-0),(o-orange, 0-0), (b-blue, 1-2), (' '-yellow, 0-1)])],
-    [tile(2, 1, [(g-black, 0-0),(o-orange, 0-0), (b-blue, 0-0), (' '-yellow, 0-1)]),
-     tile(2, 2, [(g-black, 0-0), (o-orange, 0-0) ,(b-blue, 0-0), (' '-yellow, 0-1)])]
+    [tile(1, 1, [(g-gray, 0-0), (o-orange, 2-1), (b-blue, 0-0), (' '-yellow, 0-1)]),
+     tile(1, 2, [(g-gray, 1-2),(o-orange, 0-0), (b-blue, 0-0), (' '-yellow, 0-1)])],
+    [tile(2, 1, [(g-gray, 0-0),(o-orange, 0-0), (b-blue, 0-0), (' '-yellow, 0-1)]),
+     tile(2, 2, [(g-gray, 0-0), (o-orange, 0-0) ,(b-blue, 0-0), (' '-yellow, 0-1)])],
+     [tile(3, 1, [(g-gray, 0-0),(o-orange, 0-0), (b-blue, 0-0), (' '-yellow, 0-1)]),
+     tile(3, 2, [(g-gray, 0-0), (o-orange, 0-0) ,(b-blue, 1-3), (' '-yellow, 0-1)])]
 ]).

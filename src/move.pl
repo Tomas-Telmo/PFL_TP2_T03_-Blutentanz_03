@@ -10,11 +10,7 @@ move_piece(CurrentBoard, game_config(Width, Height), Player, Player-Piece, Row-C
     move_place_piece(NewBoard, Row-Col-Color, Player-Piece, NewFinalBoard) , !.
 
 %Move a piece from outside the board to the board
-<<<<<<< HEAD
 move_piece(CurrentBoard, game_config(Width, Height), Player, Player-Piece, Row-Col-Color, Pieces_Available, Pieces_Delivered, NewFinalBoard, Pieces_Available,Pieces_Delivered  ) :-
-=======
-move_put_piece(CurrentBoard, game_config(Width, Height), Player, Player-Piece, Row-Col-Color, NewFinalBoard) :-
->>>>>>> botmaking
     is_move_possible_start(CurrentBoard, game_config(Width, Height), Player, Player-Piece, Row-Col-Color),
     move_place_piece(CurrentBoard, Row-Col-Color, Player-Piece, NewFinalBoard), !.
 
@@ -230,11 +226,4 @@ final_line(game_config(Width, _), Width-_-3).
     
 
 
-board([
-    [tile(1, 1, [(g-gray, 0-0), (o-orange, 2-1), (b-blue, 0-0), (' '-yellow, 0-1)]),
-     tile(1, 2, [(g-gray, 1-2),(o-orange, 0-0), (b-blue, 0-0), (' '-yellow, 0-1)])],
-    [tile(2, 1, [(g-gray, 0-0),(o-orange, 0-0), (b-blue, 0-0), (' '-yellow, 0-1)]),
-     tile(2, 2, [(g-gray, 0-0), (o-orange, 0-0) ,(b-blue, 0-0), (' '-yellow, 0-1)])],
-     [tile(3, 1, [(g-gray, 0-0),(o-orange, 0-0), (b-blue, 0-0), (' '-yellow, 0-1)]),
-     tile(3, 2, [(g-gray, 0-0), (o-orange, 0-0) ,(b-blue, 1-3), (' '-yellow, 0-1)])]
-]).
+
