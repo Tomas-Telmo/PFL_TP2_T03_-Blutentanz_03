@@ -10,7 +10,11 @@ move_piece(CurrentBoard, game_config(Width, Height), Player, Player-Piece, Row-C
     move_place_piece(NewBoard, Row-Col-Color, Player-Piece, NewFinalBoard) , !.
 
 %Move a piece from outside the board to the board
+<<<<<<< HEAD
 move_piece(CurrentBoard, game_config(Width, Height), Player, Player-Piece, Row-Col-Color, Pieces_Available, Pieces_Delivered, NewFinalBoard, Pieces_Available,Pieces_Delivered  ) :-
+=======
+move_put_piece(CurrentBoard, game_config(Width, Height), Player, Player-Piece, Row-Col-Color, NewFinalBoard) :-
+>>>>>>> botmaking
     is_move_possible_start(CurrentBoard, game_config(Width, Height), Player, Player-Piece, Row-Col-Color),
     move_place_piece(CurrentBoard, Row-Col-Color, Player-Piece, NewFinalBoard), !.
 
